@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>体验账本 · AI/Agent 体验指标体系</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F4EE;
+  --paper-2:#FFFEF8;
+  --ink:#14131A;
+  --ink-2:#403F48;
+  --ink-3:#8A8993;
+  --indigo:#3B3486;
+  --indigo-deep:#241F5C;
+  --emerald:#0F7B52;
+  --emerald-mist:#E4F2EC;
+  --red:#B23A2E;
+  --red-mist:#F7E7E4;
+  --line:#1A1920;
+  --hair:#E0DED5;
+  --serif:'Noto Serif SC',serif;
+  --sans:'Noto Sans SC',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--emerald);color:#fff}
+
+/* 进度条 */
+.progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--emerald);z-index:100}
+
+/* ============ HERO ============ */
+.hero{
+  position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#1A2E24 0%,#243B2E 45%,#14332A 100%);
+  color:#F2F0E8;
+}
+.hero::before{
+  content:"";position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:56px 56px;
+}
+.hero::after{
+  content:"¥";position:absolute;right:-60px;top:-120px;
+  font-family:var(--serif);font-weight:900;font-size:640px;line-height:1;
+  color:rgba(255,255,255,.04);
+}
+.hero-in{max-width:1180px;margin:0 auto;padding:140px 48px 100px;position:relative;z-index:2}
+.hero .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.36em;color:#7FB89A;display:flex;align-items:center;gap:14px;margin-bottom:40px}
+.hero .kicker::after{content:"";flex:0 0 56px;height:1px;background:#7FB89A}
+.hero h1{font-family:var(--serif);font-weight:900;font-size:clamp(54px,8.5vw,112px);line-height:1.02;letter-spacing:.04em}
+.hero h1 .thin{font-weight:300}
+.hero .tagline{margin-top:30px;font-family:var(--mono);font-size:13px;letter-spacing:.18em;color:#9EC9B1}
+.hero .sub{margin-top:42px;max-width:620px}
+.hero .sub p{font-size:16px;line-height:2.1;color:#C7D4CC}
+.hero .sub strong{color:#fff;font-weight:600}
+.hero-vert{
+  position:absolute;right:48px;top:150px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.4em;color:#7FB89A;writing-mode:vertical-rl;height:420px;z-index:2;
+}
+.hero-balance{
+  margin-top:54px;display:inline-flex;align-items:stretch;border:1px solid rgba(255,255,255,.2);
+}
+.hero-balance .side{padding:18px 30px;display:flex;flex-direction:column;gap:6px;min-width:150px}
+.hero-balance .cr{border-right:1px solid rgba(255,255,255,.2)}
+.hero-balance .cr .k{font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:#7FB89A}
+.hero-balance .cr .v{font-family:var(--serif);font-size:22px;font-weight:700;color:#E8F5EF}
+.hero-balance .dr .k{font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:#D9A49C}
+.hero-balance .dr .v{font-family:var(--serif);font-size:22px;font-weight:700;color:#F0D0CB}
+.hero-balance .eq{padding:0 16px;background:rgba(255,255,255,.06);display:flex;align-items:center;font-family:var(--mono);font-size:22px;color:#fff}
+
+/* 档案条 */
+.masthead{background:var(--line);color:#fff}
+.masthead-in{max-width:1180px;margin:0 auto;padding:22px 48px;display:grid;grid-template-columns:repeat(5,1fr);gap:24px}
+.masthead .m .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.22em;color:#7C7A88;margin-bottom:7px}
+.masthead .m .v{font-family:var(--serif);font-size:15px;font-weight:600}
+.masthead .m .v em{font-style:normal;color:#7FB89A}
+
+/* ============ 骨架 ============ */
+.shell{max-width:1180px;margin:0 auto;padding:0 48px 130px;display:grid;grid-template-columns:188px minmax(0,1fr);gap:72px}
+.toc{position:sticky;top:0;height:100vh;padding-top:100px;align-self:start}
+.toc .lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.3em;color:var(--ink-3);margin-bottom:22px}
+.toc a{display:block;text-decoration:none;padding:7px 0 7px 14px;color:var(--ink-3);font-size:12.5px;border-left:1px solid var(--hair);transition:.3s;font-variant-numeric:tabular-nums}
+.toc a .n{font-family:var(--mono);font-size:10px;margin-right:8px;color:var(--ink-3)}
+.toc a:hover{color:var(--ink)}
+.toc a.active{color:var(--ink);font-weight:500;border-left:2px solid var(--emerald);padding-left:13px}
+.toc a.active .n{color:var(--emerald)}
+main{min-width:0;padding-top:100px}
+.sec{margin-bottom:130px;scroll-margin-top:20px}
+
+/* 章头 */
+.ch{display:flex;align-items:baseline;gap:18px;border-bottom:1.5px solid var(--line);padding-bottom:18px;margin-bottom:12px}
+.ch .no{font-family:var(--mono);font-weight:500;font-size:12px;color:var(--emerald);letter-spacing:.12em}
+.ch h2{font-family:var(--serif);font-weight:900;font-size:clamp(25px,3.2vw,36px);letter-spacing:.05em}
+.ch .en{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--ink-3)}
+.lede{font-size:16px;line-height:2.05;color:var(--ink-2);max-width:760px;margin:32px 0 10px}
+.lede strong{font-weight:600;color:var(--ink)}
+.mark{background:linear-gradient(transparent 68%,var(--emerald-mist) 68%);font-weight:500}
+
+/* ============ 账本总览 ============ */
+.ledger-intro{margin:40px 0;border:1.5px solid var(--line);background:var(--paper-2)}
+.ledger-row{display:grid;grid-template-columns:1fr 80px 1fr;align-items:stretch;border-bottom:1px solid var(--hair)}
+.ledger-row:last-child{border-bottom:none}
+.ledger-row .credit{padding:22px 26px}
+.ledger-row .mid{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--ink-3);background:var(--paper);border-left:1px solid var(--hair);border-right:1px solid var(--hair)}
+.ledger-row .debit{padding:22px 26px}
+.ledger-row .credit h5{font-family:var(--serif);font-weight:700;font-size:16px;color:var(--emerald);margin-bottom:4px}
+.ledger-row .credit p{font-size:13px;line-height:1.8;color:var(--ink-2)}
+.ledger-row .debit h5{font-family:var(--serif);font-weight:700;font-size:16px;color:var(--red);margin-bottom:4px}
+.ledger-row .debit p{font-size:13px;line-height:1.8;color:var(--ink-2)}
+.ledger-row .credit .en,.ledger-row .debit .en{font-family:var(--mono);font-size:10px;color:var(--ink-3);letter-spacing:.08em;margin-bottom:6px}
+
+/* 北极星净值 */
+.net{margin:44px 0;display:grid;grid-template-columns:1.1fr .9fr;gap:1px;background:var(--line);border:1.5px solid var(--line)}
+.net .l{background:var(--line);color:#fff;padding:44px 42px}
+.net .l .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.3em;color:#7FB89A;margin-bottom:18px}
+.net .l h3{font-family:var(--serif);font-weight:900;font-size:30px;letter-spacing:.06em}
+.net .l h3 .num{color:#7FB89A}
+.net .l .en{font-family:var(--mono);font-size:11px;color:#6E6D7E;letter-spacing:.12em;margin-top:12px}
+.net .r{background:var(--paper-2);padding:44px 42px}
+.net .r .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.3em;color:var(--emerald);margin-bottom:18px}
+.net .r p{font-size:14px;line-height:2.05;color:var(--ink-2)}
+.net .r p+p{margin-top:1em}
+.net .r strong{color:var(--ink)}
+.formula-nb{margin:0 0 30px;border:1.5px solid var(--line);background:var(--paper-2);padding:28px 34px;display:flex;gap:26px;flex-wrap:wrap;align-items:center}
+.formula-nb .fn{font-family:var(--serif);font-weight:700;font-size:15px;white-space:nowrap}
+.formula-nb .feq{font-family:var(--mono);color:var(--emerald);font-size:16px}
+.formula-nb .frac{display:inline-flex;flex-direction:column;text-align:center;font-size:12.5px;color:var(--ink-2)}
+.formula-nb .frac .a{padding:0 12px 7px;border-bottom:1.5px solid var(--line)}
+.formula-nb .frac .b{padding:7px 12px 0}
+.formula-nb .ftail{font-family:var(--mono);font-size:12.5px;color:var(--emerald)}
+
+/* ============ 账册 ============ */
+.book{margin:60px 0}
+.book-head{display:flex;align-items:baseline;gap:16px;margin-bottom:6px}
+.book-head .bn{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:#fff;background:var(--emerald);padding:5px 13px}
+.book-head h3{font-family:var(--serif);font-weight:900;font-size:24px;letter-spacing:.05em}
+.book-head .en{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--ink-3);margin-left:auto}
+.book-sub{font-size:13.5px;color:var(--ink-3);line-height:1.9;margin-bottom:18px;max-width:700px}
+/* 借代表格 */
+.cd-table{border-top:1.5px solid var(--line);overflow-x:auto}
+.cd-table table{width:100%;border-collapse:collapse;min-width:680px}
+.cd-table th{font-family:var(--mono);font-weight:500;font-size:10px;letter-spacing:.18em;text-align:left;padding:11px 14px 10px;border-bottom:1px solid var(--line)}
+.cd-table th.ct{color:var(--emerald)}
+.cd-table th.dt{color:var(--red)}
+.cd-table td{font-size:13px;line-height:1.8;padding:13px 14px;border-bottom:1px solid var(--hair);vertical-align:top;color:var(--ink-2)}
+.cd-table td:first-child{color:var(--ink);font-weight:500;white-space:nowrap}
+.cd-table td .en{display:block;font-family:var(--mono);font-weight:400;font-size:10.5px;color:var(--ink-3);margin-top:2px}
+.cd-table tbody tr{transition:background .25s}
+.cd-table tbody tr:hover{background:var(--emerald-mist)}
+.book-rule{margin:30px 0 0;padding:18px 24px;background:var(--emerald-mist);border-left:3px solid var(--emerald);font-size:13.5px;line-height:1.95;color:var(--ink-2)}
+.book-rule strong{color:var(--emerald);font-weight:600}
+
+/* ============ 账本规则 ============ */
+.rules{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1.5px solid var(--line);margin:44px 0}
+.rules .ru{background:var(--paper-2);padding:30px 32px;transition:background .3s}
+.rules .ru:hover{background:var(--emerald-mist)}
+.rules .ru .no{font-family:var(--serif);font-weight:400;font-size:14px;color:var(--emerald)}
+.rules .ru h5{font-family:var(--serif);font-weight:700;font-size:18px;margin:10px 0 6px}
+.rules .ru .vs{font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:.1em;margin-bottom:10px}
+.rules .ru p{font-size:13px;line-height:1.95;color:var(--ink-2)}
+
+/* ============ 余额可视化 ============ */
+.balance{margin:44px 0;border:1.5px solid var(--line);background:var(--paper-2)}
+.balance-top{background:var(--line);color:#fff;padding:26px 36px;display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+.balance-top .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.28em;color:#7FB89A}
+.balance-top h4{font-family:var(--serif);font-weight:900;font-size:21px}
+.balance-top p{font-family:var(--mono);font-size:11.5px;color:#9E9CAE;letter-spacing:.06em;margin-left:auto}
+.bars{padding:40px 36px 20px}
+.bar-row{margin-bottom:26px}
+.bar-row .label{display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px}
+.bar-row .label .n{font-weight:500;color:var(--ink)}
+.bar-row .label .v{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.bar-track{display:flex;height:30px;background:var(--paper);border:1px solid var(--hair)}
+.bar-track .cr{background:var(--emerald);display:flex;align-items:center;padding-left:12px;color:#fff;font-family:var(--mono);font-size:11px;letter-spacing:.04em}
+.bar-track .mid{width:2px;background:var(--line)}
+.bar-track .dr{background:var(--red);display:flex;align-items:center;justify-content:flex-end;padding-right:12px;color:#fff;font-family:var(--mono);font-size:11px;letter-spacing:.04em}
+.bar-row .meta{font-size:11.5px;color:var(--ink-3);margin-top:6px}
+
+/* ============ 反指标 ============ */
+.anti{margin:44px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1.5px solid var(--line)}
+.anti .a{background:var(--paper-2);padding:30px 28px;transition:background .3s}
+.anti .a:hover{background:var(--red-mist)}
+.anti .a .no{font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:.14em}
+.anti .a h6{font-size:15px;font-weight:600;margin:10px 0 8px}
+.anti .a p{font-size:12.5px;line-height:1.85;color:var(--ink-2)}
+
+/* ============ MVP ============ */
+.mvp{margin:44px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1.5px solid var(--line)}
+.mvp .m{background:var(--paper-2);padding:28px 24px 32px;position:relative;transition:background .3s}
+.mvp .m:hover{background:var(--emerald-mist)}
+.mvp .m .no{font-family:var(--mono);font-size:11px;color:var(--emerald);letter-spacing:.1em}
+.mvp .m h6{font-family:var(--serif);font-weight:700;font-size:16px;margin:12px 0 4px}
+.mvp .m .en{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);letter-spacing:.08em;display:block;margin-bottom:10px}
+.mvp .m p{font-size:12px;line-height:1.85;color:var(--ink-2)}
+.mvp .m .side{position:absolute;top:24px;right:20px;font-family:var(--mono);font-size:9px;letter-spacing:.1em;padding:3px 8px;border:1px solid;border-radius:2px}
+.mvp .m .side.cr{color:var(--emerald);border-color:var(--emerald)}
+.mvp .m .side.dr{color:var(--red);border-color:var(--red)}
+
+/* ============ 对照与结语 ============ */
+.coda{border:1.5px solid var(--line);background:var(--line);color:#fff;padding:50px 52px;position:relative;overflow:hidden}
+.coda::before{content:"¥";position:absolute;right:-20px;bottom:-130px;font-family:var(--serif);font-weight:900;font-size:320px;color:rgba(127,184,154,.07);line-height:1}
+.coda .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.3em;color:#7FB89A;margin-bottom:20px}
+.coda p{font-size:15px;line-height:2.15;color:#C9C7BC;max-width:720px;position:relative;z-index:2}
+.coda strong{color:#fff;font-weight:600}
+.coda .hl{color:#7FB89A;border-bottom:1px solid rgba(127,184,154,.5);font-weight:600}
+
+footer{border-top:1px solid var(--line);max-width:1180px;margin:0 auto;padding:34px 48px 42px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--ink-3);flex-wrap:wrap;gap:10px}
+
+.top{position:fixed;right:32px;bottom:32px;width:42px;height:42px;background:var(--paper-2);border:1px solid var(--line);cursor:pointer;opacity:0;pointer-events:none;transition:.35s;z-index:90;font-family:var(--mono);color:var(--emerald);font-size:13px}
+.top.show{opacity:1;pointer-events:auto}
+.top:hover{background:var(--emerald);color:#fff;border-color:var(--emerald)}
+
+.rv{opacity:0;transform:translateY(20px);transition:opacity .8s cubic-bezier(.22,.61,.36,1),transform .8s cubic-bezier(.22,.61,.36,1)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}}
+
+@media (max-width:1080px){
+  .toc{display:none}
+  .shell{grid-template-columns:1fr;gap:0}
+  .hero-vert{display:none}
+}
+@media (max-width:820px){
+  .hero-in{padding:90px 26px 70px}
+  .shell{padding:0 26px 100px}
+  .masthead-in{grid-template-columns:1fr 1fr;padding:22px}
+  .net,.rules,.anti,.mvp{grid-template-columns:1fr}
+  .coda{padding:36px 26px}
+  footer{padding:30px 26px}
+  .sec{margin-bottom:100px}
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-vert">DEBIT · CREDIT · BALANCE</div>
+  <div class="hero-in">
+    <div class="kicker rv">FRAMEWORK 03 · AI/AGENT EXPERIENCE METRICS</div>
+    <h1 class="rv" style="transition-delay:.08s">体验<span class="thin">账本</span></h1>
+    <div class="tagline rv" style="transition-delay:.14s">EXPERIENCE LEDGER · 以借贷度量 AI 体验</div>
+    <div class="sub rv" style="transition-delay:.2s">
+      <p>用户与 AI 的每一次交互，都是一笔<strong>借贷交易</strong>：用户付出时间、认知、风险、信任；AI 偿还节省的时间、转移的负担、缓释的风险、积累的关系。<strong>体验好不好，不看单笔，看账本余额</strong>——余额为正，用户留下；为负，用户走人。</p>
+    </div>
+    <div class="hero-balance rv" style="transition-delay:.26s">
+      <div class="side cr"><div class="k">CREDIT</div><div class="v">价值侧</div></div>
+      <div class="eq">=</div>
+      <div class="side dr"><div class="k">DEBIT</div><div class="v">成本侧</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="masthead">
+  <div class="masthead-in">
+    <div class="m"><div class="k">FRAMEWORK</div><div class="v">体验账本<em> · LEDGER</em></div></div>
+    <div class="m"><div class="k">METAPHOR</div><div class="v">借贷记账<em> · 借与贷对等</em></div></div>
+    <div class="m"><div class="k">NORTH STAR</div><div class="v">体验净值率<em> · 关系性</em></div></div>
+    <div class="m"><div class="k">ACCOUNTS</div><div class="v"><em>4</em> 本账 · <em>8</em> 反指标</div></div>
+    <div class="m"><div class="k">DESIGN STANCE</div><div class="v">行为优先<em> · 余额决定留存</em></div></div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <nav class="toc" id="toc">
+    <div class="lbl">LEDGER INDEX</div>
+    <a href="#s1" class="active"><span class="n">01</span>核心命题</a>
+    <a href="#s2"><span class="n">02</span>北极星净值</a>
+    <a href="#s3"><span class="n">03</span>四本账</a>
+    <a href="#s4"><span class="n">04</span>记账规则</a>
+    <a href="#s5"><span class="n">05</span>余额分布</a>
+    <a href="#s6"><span class="n">06</span>反指标</a>
+    <a href="#s7"><span class="n">07</span>MVP</a>
+    <a href="#s8"><span class="n">08</span>结语</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 01 核心命题 ============ -->
+  <section class="sec" id="s1">
+    <div class="ch rv"><span class="no">01</span><h2>核心命题</h2><span class="en">CORE THESIS</span></div>
+    <p class="lede rv">一个 AI 产品的体验，等于它在用户心中的<strong>账本余额</strong>。传统满意度指标只看了借方（用户感受），却没有记贷方（AI 交付了什么）；或者只看贷方（任务成功率），却忘了借方（用户为这个成功付出了多少）。<strong>只有把借贷两侧同时记账，才能判断这场交易是否值得持续。</strong></p>
+    <p class="lede rv">这个框架的独特之处在于：它不把指标按「理解/执行/信任」分类，而是按<strong>「这笔账记在借方还是贷方」</strong>分类。一个指标如果不能明确归入借或贷，它就不是好指标——因为它无法回答「用户赚了还是亏了」。</p>
+  </section>
+
+  <!-- ============ 02 北极星 ============ -->
+  <section class="sec" id="s2">
+    <div class="ch rv"><span class="no">02</span><h2>北极星：体验净值率</h2><span class="en">NET EXPERIENCE VALUE</span></div>
+    <div class="net rv">
+      <div class="l">
+        <div class="k">NORTH STAR</div>
+        <h3>体验净值率 <span class="num">NEV</span></h3>
+        <div class="en">NET EXPERIENCE VALUE RATIO</div>
+      </div>
+      <div class="r">
+        <div class="k">为什么不是任务成功率</div>
+        <p><strong>任务成功率只看贷方。</strong>用户为一个 95% 成功率的任务付出的提示时间、核验焦虑、返工成本，如果超过任务本身节省的时间，净值就是负的——用户不会回来。</p>
+        <p>体验净值率把「AI 交付的价值」减去「用户付出的成本」，再除以总成本。<span class="mark">净值率 > 1 才是正向体验。</span></p>
+      </div>
+    </div>
+    <div class="formula-nb rv">
+      <span class="fn">体验净值率 NEV</span><span class="feq">=</span>
+      <span class="frac"><span class="a">价值侧总和 − 成本侧总和</span><span class="b">用户付出的总成本</span></span>
+      <span class="ftail">× 100%</span>
+    </div>
+  </section>
+
+  <!-- ============ 03 四本账 ============ -->
+  <section class="sec" id="s3">
+    <div class="ch rv"><span class="no">03</span><h2>四本账：借贷结构</h2><span class="en">FOUR ACCOUNTS</span></div>
+    <p class="lede rv">每一次 AI 交互同时打开四本账。<strong>贷方 = 用户获得的价值，借方 = 用户付出的成本</strong>。四本账独立计算，任一本持续为负，体验就会在对应维度上崩塌。</p>
+
+    <div class="ledger-intro rv">
+      <div class="ledger-row">
+        <div class="credit">
+          <div class="en">TIME · CREDIT</div>
+          <h5>时间账 · 贷方</h5>
+          <p>AI 为用户节省的实际完成时间。</p>
+        </div>
+        <div class="mid">VS</div>
+        <div class="debit">
+          <div class="en">TIME · DEBIT</div>
+          <h5>时间账 · 借方</h5>
+          <p>提示、等待、核验、返工所消耗的时间。</p>
+        </div>
+      </div>
+      <div class="ledger-row">
+        <div class="credit">
+          <div class="en">COGNITIVE · CREDIT</div>
+          <h5>认知账 · 贷方</h5>
+          <p>AI 替用户承担的思考、记忆、判断负担。</p>
+        </div>
+        <div class="mid">VS</div>
+        <div class="debit">
+          <div class="en">COGNITIVE · DEBIT</div>
+          <h5>认知账 · 借方</h5>
+          <p>监督、纠错、不确定性等待所增加的心理负荷。</p>
+        </div>
+      </div>
+      <div class="ledger-row">
+        <div class="credit">
+          <div class="en">RISK · CREDIT</div>
+          <h5>风险账 · 贷方</h5>
+          <p>AI 帮用户规避或缓释的潜在风险。</p>
+        </div>
+        <div class="mid">VS</div>
+        <div class="debit">
+          <div class="en">RISK · DEBIT</div>
+          <h5>风险账 · 借方</h5>
+          <p>AI 引入的新风险敞口与不可逆损失可能。</p>
+        </div>
+      </div>
+      <div class="ledger-row">
+        <div class="credit">
+          <div class="en">RELATION · CREDIT</div>
+          <h5>关系账 · 贷方</h5>
+          <p>用户积累的信任、依赖与转移壁垒。</p>
+        </div>
+        <div class="mid">VS</div>
+        <div class="debit">
+          <div class="en">RELATION · DEBIT</div>
+          <h5>关系账 · 借方</h5>
+          <p>挫败、困惑、失望消耗的信任资本。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 账1 -->
+    <div class="book rv">
+      <div class="book-head"><span class="bn">ACCOUNT 01</span><h3>时间账</h3><span class="en">TIME LEDGER</span></div>
+      <p class="book-sub">最直接的账本。时间不能造假——用户用了多少分钟、省了多少分钟，有客观日志。</p>
+      <div class="cd-table"><table>
+        <thead><tr><th>科目</th><th class="ct">贷方 CREDIT（价值）</th><th class="dt">借方 DEBIT（成本）</th></tr></thead>
+        <tbody>
+          <tr><td>耗时节省<span class="en">Time Saved</span></td><td>基线完成时间 − AI 辅助完成时间（含核验返工）</td><td>—</td></tr>
+          <tr><td>提示时间<span class="en">Prompting Time</span></td><td>—</td><td>用户撰写与迭代提示的总时长</td></tr>
+          <tr><td>核验时间<span class="en">Verification Time</span></td><td>—</td><td>用户检验 AI 输出正确性的时长</td></tr>
+          <tr><td>返工时间<span class="en">Rework Time</span></td><td>—</td><td>因输出不合格而重做的时长</td></tr>
+          <tr><td>等待时间<span class="en">Wait Time</span></td><td>—</td><td>用户等待 AI 响应的时长（含主观等待感知）</td></tr>
+        </tbody>
+      </table></div>
+      <div class="book-rule"><strong>记账要点：</strong>核验与返工时间必须计入借方。只算「生成时间」会严重高估时间账余额——这是 AI 产品最常见的账本造假。</div>
+    </div>
+
+    <!-- 账2 -->
+    <div class="book rv">
+      <div class="book-head"><span class="bn">ACCOUNT 02</span><h3>认知账</h3><span class="en">COGNITIVE LEDGER</span></div>
+      <p class="book-sub">AI 存在的意义，是把用户的认知负担转移到系统侧。如果用了 AI 反而更累，这本账就是负的。</p>
+      <div class="cd-table"><table>
+        <thead><tr><th>科目</th><th class="ct">贷方 CREDIT（价值）</th><th class="dt">借方 DEBIT（成本）</th></tr></thead>
+        <tbody>
+          <tr><td>认知转移<span class="en">Cognitive Offload</span></td><td>AI 替用户完成的思考/记忆/决策量（用基线对照）</td><td>—</td></tr>
+          <tr><td>监督负荷<span class="en">Monitoring Load</span></td><td>—</td><td>盯进度、猜状态、防出错的心理努力（可用 NASA-TLX）</td></tr>
+          <tr><td>纠错负担<span class="en">Correction Load</span></td><td>—</td><td>定位 AI 错误并修正的认知成本</td></tr>
+          <tr><td>不确定性焦虑<span class="en">Uncertainty Anxiety</span></td><td>—</td><td>因 AI 过程不透明而产生的决策犹豫与二次确认</td></tr>
+          <tr><td>切换成本<span class="en">Context Switch</span></td><td>—</td><td>在「自己做」与「看 AI 做」之间反复切换的损耗</td></tr>
+        </tbody>
+      </table></div>
+      <div class="book-rule"><strong>记账要点：</strong>认知账的余额可以为正，但不能以时间账为代价。一个让用户省 10 分钟却多消耗 30 分钟心理能量的 AI，体验仍然是亏的。</div>
+    </div>
+
+    <!-- 账3 -->
+    <div class="book rv">
+      <div class="book-head"><span class="bn">ACCOUNT 03</span><h3>风险账</h3><span class="en">RISK LEDGER</span></div>
+      <p class="book-sub">风险账是四本账中唯一「借方可一票否决全部贷方」的账——再大的价值也不能抵消不可逆的风险。</p>
+      <div class="cd-table"><table>
+        <thead><tr><th>科目</th><th class="ct">贷方 CREDIT（价值）</th><th class="dt">借方 DEBIT（成本）</th></tr></thead>
+        <tbody>
+          <tr><td>风险缓释<span class="en">Risk Mitigation</span></td><td>AI 帮用户规避的错误、损失、违规次数</td><td>—</td></tr>
+          <tr><td>风险敞口<span class="en">Risk Exposure</span></td><td>—</td><td>AI 可能引入的错误操作、隐私泄露、违规行为的期望损失</td></tr>
+          <tr><td>不可逆损失<span class="en">Irreversible Loss</span></td><td>—</td><td>已发生且无法回滚的损失（资金、数据、声誉）</td></tr>
+          <tr><td>幻觉风险<span class="en">Hallucination Risk</span></td><td>—</td><td>用户基于错误断言做决策的期望损失</td></tr>
+          <tr><td>权限越界<span class="en">Permission Breach</span></td><td>—</td><td>AI 超出授权范围操作的风险敞口</td></tr>
+        </tbody>
+      </table></div>
+      <div class="book-rule"><strong>记账要点：</strong>风险账的借方出现「不可逆损失」时，整本账本直接计入赤字，不参与加权平衡——这是红线条款。</div>
+    </div>
+
+    <!-- 账4 -->
+    <div class="book rv">
+      <div class="book-head"><span class="bn">ACCOUNT 04</span><h3>关系账</h3><span class="en">RELATION LEDGER</span></div>
+      <p class="book-sub">关系账是长期复利的来源。前三本账决定单次体验，关系账决定用户是否把下一次、更大的事交给它。</p>
+      <div class="cd-table"><table>
+        <thead><tr><th>科目</th><th class="ct">贷方 CREDIT（价值）</th><th class="dt">借方 DEBIT（成本）</th></tr></thead>
+        <tbody>
+          <tr><td>信任积累<span class="en">Trust Accumulation</span></td><td>用户授权范围与风险等级随时间的上升幅度</td><td>—</td></tr>
+          <tr><td>依赖深度<span class="en">Reliance Depth</span></td><td>用户主动将同类任务交给 AI 的比例上升</td><td>—</td></tr>
+          <tr><td>迁移壁垒<span class="en">Switching Cost</span></td><td>用户因「AI 懂我」而产生的迁移摩擦</td><td>—</td></tr>
+          <tr><td>信任透支<span class="en">Trust Overdraft</span></td><td>—</td><td>错误、隐瞒、越界消耗的信任资本</td></tr>
+          <tr><td>挫败感<span class="en">Frustration</span></td><td>—</td><td>用户放弃、抱怨、降级使用的频次</td></tr>
+        </tbody>
+      </table></div>
+      <div class="book-rule"><strong>记账要点：</strong>关系账有复利效应——贷方持续为正会让时间账与认知账的余额自动提升（用户不再需要解释自己）。这是体验的飞轮。</div>
+    </div>
+  </section>
+
+  <!-- ============ 04 记账规则 ============ -->
+  <section class="sec" id="s4">
+    <div class="ch rv"><span class="no">04</span><h2>四条记账规则</h2><span class="en">ACCOUNTING RULES</span></div>
+    <p class="lede rv">账本不准，余额就是假的。这四条规则防止指标体系自欺欺人。</p>
+    <div class="rules rv">
+      <div class="ru">
+        <div class="no">Ⅰ</div>
+        <h5>全额入账，不抵扣</h5>
+        <div class="vs">REJECTS → 借贷相抵后报告净额</div>
+        <p>一个省了 20 分钟但花了 18 分钟核验的任务，借贷都要完整记录，不能只报告「净省 2 分钟」。净额掩盖了结构问题。</p>
+      </div>
+      <div class="ru">
+        <div class="no">Ⅱ</div>
+        <h5>沉没成本不计入</h5>
+        <div class="vs">REJECTS → 把已投入的时间算成价值</div>
+        <p>用户已经花在提示上的时间是沉没成本，不能因为「都花了这么多了」就把它折算成贷方价值。只看边际收益。</p>
+      </div>
+      <div class="ru">
+        <div class="no">Ⅲ</div>
+        <h5>红线不参与平衡</h5>
+        <div class="vs">REJECTS → 用高价值抵消严重风险</div>
+        <p>风险账出现不可逆损失时，整本账本直接计赤，无论其他账多正。红线是断路器，不是仪表盘上的一格。</p>
+      </div>
+      <div class="ru">
+        <div class="no">Ⅳ</div>
+        <h5>行为证据优先</h5>
+        <div class="vs">REJECTS → 用问卷替代记账</div>
+        <p>用户说「很省心」不算贷方，授权范围扩大才算贷方。借贷都要尽量用行为日志而非主观评分来记。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 余额分布 ============ -->
+  <section class="sec" id="s5">
+    <div class="ch rv"><span class="no">05</span><h2>余额分布示意</h2><span class="en">BALANCE VISUALIZATION</span></div>
+    <p class="lede rv">把四本账的借贷做归一化对比，可以一眼看出体验的结构性盈亏。<strong>绿条越长越正，红条越长越负。</strong></p>
+    <div class="balance rv">
+      <div class="balance-top">
+        <span class="k">BALANCE SHEET</span>
+        <h4>四本账的借贷对比</h4>
+        <p>示意数据 · ILLUSTRATIVE</p>
+      </div>
+      <div class="bars">
+        <div class="bar-row">
+          <div class="label"><span class="n">时间账</span><span class="v">NEV = +1.8</span></div>
+          <div class="bar-track"><div class="cr" style="width:62%">+ 节省 62</div><div class="mid"></div><div class="dr" style="width:34%">提示/核验 34</div></div>
+          <div class="meta">贷方充足，但核验成本仍占借方三分之一——优化空间在交付前自检。</div>
+        </div>
+        <div class="bar-row">
+          <div class="label"><span class="n">认知账</span><span class="v">NEV = +0.6</span></div>
+          <div class="bar-track"><div class="cr" style="width:45%">+ 转移 45</div><div class="mid"></div><div class="dr" style="width:28%">监督/纠错 28</div></div>
+          <div class="meta">勉强为正。监督负荷偏高，说明过程透明度不足。</div>
+        </div>
+        <div class="bar-row">
+          <div class="label"><span class="n">风险账</span><span class="v">NEV = +0.3</span></div>
+          <div class="bar-track"><div class="cr" style="width:28%">+ 缓释 28</div><div class="mid"></div><div class="dr" style="width:22%">敞口 22</div></div>
+          <div class="meta">接近盈亏平衡。幻觉敞口是主要借方，需加强溯源。</div>
+        </div>
+        <div class="bar-row">
+          <div class="label"><span class="n">关系账</span><span class="v">NEV = +2.1</span></div>
+          <div class="bar-track"><div class="cr" style="width:58%">+ 信任积累 58</div><div class="mid"></div><div class="dr" style="width:28%">挫败 28</div></div>
+          <div class="meta">最强的正账。复利效应已启动，迁移壁垒在形成。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 06 反指标 ============ -->
+  <section class="sec" id="s6">
+    <div class="ch rv"><span class="no">06</span><h2>八个反指标</h2><span class="en">ANTI-METRICS</span></div>
+    <p class="lede rv">反指标是「看起来好、其实坏」的信号。它们的上升意味着账本在造假。监控反指标比监控指标更能防止自嗨。</p>
+    <div class="anti rv">
+      <div class="a"><div class="no">ANTI-01</div><h6>高响应速度但低首答正确率</h6><p>快但错——用户为错误付出的返工时间远超响应节省的时间。</p></div>
+      <div class="a"><div class="no">ANTI-02</div><h6>高完成率但高静默失败</h6><p>表面交付，实则失败未告知——关系账在透支。</p></div>
+      <div class="a"><div class="no">ANTI-03</div><h6>低交互轮次但低用户理解</h6><p>不是因为 AI 聪明，是因为用户懒得问了——放弃率即将上升。</p></div>
+      <div class="a"><div class="no">ANTI-04</div><h6>高满意度但低复用率</h6><p>用户嘴上说好，身体很诚实——认知账或风险账为负。</p></div>
+      <div class="a"><div class="no">ANTI-05</div><h6>高自主完成率但高监督时间</h6><p>自动化名义上完成了，用户却全程盯着——认知账为负。</p></div>
+      <div class="a"><div class="no">ANTI-06</div><h6>高 NPS 但风险等级不迁移</h6><p>用户愿意推荐，但不敢把更重要的事交给它——信任被封顶。</p></div>
+      <div class="a"><div class="no">ANTI-07</div><h6>低错误率但高幻觉率</h6><p>系统记录的错误少，是因为没人发现——暴露率才是真相。</p></div>
+      <div class="a"><div class="no">ANTI-08</div><h6>高留存但高挫败率</h6><p>用户留下是因为没有替代，不是因为体验好——迁移壁垒是被动的。</p></div>
+    </div>
+  </section>
+
+  <!-- ============ 07 MVP ============ -->
+  <section class="sec" id="s7">
+    <div class="ch rv"><span class="no">07</span><h2>MVP：先记这 8 笔</h2><span class="en">MINIMUM LEDGER</span></div>
+    <p class="lede rv">起步阶段，四本账各记借贷各一笔——共 8 个指标，足以算出第一份净值。</p>
+    <div class="mvp rv">
+      <div class="m"><span class="side cr">CREDIT</span><div class="no">01</div><h6>时间节省</h6><span class="en">TIME SAVED</span><p>基线耗时 − 实际耗时</p></div>
+      <div class="m"><span class="side dr">DEBIT</span><div class="no">02</div><h6>核验时间</h6><span class="en">VERIFY TIME</span><p>检验输出正确的时长</p></div>
+      <div class="m"><span class="side cr">CREDIT</span><div class="no">03</div><h6>认知转移</h6><span class="en">COGNITIVE OFFLOAD</span><p>AI 替用户承担的思考量</p></div>
+      <div class="m"><span class="side dr">DEBIT</span><div class="no">04</div><h6>监督负荷</h6><span class="en">MONITOR LOAD</span><p>盯进度与防错的心理努力</p></div>
+      <div class="m"><span class="side cr">CREDIT</span><div class="no">05</div><h6>风险缓释</h6><span class="en">RISK MITIGATION</span><p>AI 规避的错误次数</p></div>
+      <div class="m"><span class="side dr">DEBIT</span><div class="no">06</div><h6>幻觉敞口</h6><span class="en">HALLUC EXPOSURE</span><p>用户接触到的错误断言</p></div>
+      <div class="m"><span class="side cr">CREDIT</span><div class="no">07</div><h6>信任积累</h6><span class="en">TRUST GROWTH</span><p>授权风险等级的上移</p></div>
+      <div class="m"><span class="side dr">DEBIT</span><div class="no">08</div><h6>挫败频次</h6><span class="en">FRUSTRATION</span><p>放弃/抱怨/降级使用</p></div>
+    </div>
+  </section>
+
+  <!-- ============ 08 结语 ============ -->
+  <section class="sec" id="s8">
+    <div class="ch rv"><span class="no">08</span><h2>结语</h2><span class="en">CODA</span></div>
+    <div class="coda rv">
+      <div class="k">CODA · 一句话</div>
+      <p>用户不会用「它好不好用」来回答「要不要继续用」。他们在心里翻一本账：<strong>我付出的，和我得到的，哪一边更重？</strong>把这本账摊开，把每一笔借贷都记清楚，体验设计就从「凭感觉优化」变成了「看余额调账」。当四本账的余额持续为正，<span class="hl">用户就会把更大的事，继续交给你</span>。</p>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <span>EXPERIENCE LEDGER · AI/AGENT METRICS FRAMEWORK 03</span>
+  <span>CREDIT ⇄ DEBIT · BALANCE DECIDES RETENTION</span>
+</footer>
+
+<button class="top" id="toTop" aria-label="返回顶部">↑</button>
+
+<script>
+const progress=document.getElementById('progress');
+const toTop=document.getElementById('toTop');
+addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  const p=h.scrollTop/(h.scrollHeight-h.clientHeight);
+  progress.style.width=(p*100).toFixed(2)+'%';
+  toTop.classList.toggle('show',h.scrollTop>600);
+},{passive:true});
+toTop.addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
+
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.08,rootMargin:'0px 0px -4% 0px'});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+const links=[...document.querySelectorAll('.toc a')];
+const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const spy=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.classList.remove('active'));
+      const i=secs.indexOf(e.target);
+      if(i>-1)links[i].classList.add('active');
+    }
+  });
+},{rootMargin:'-25% 0px -65% 0px'});
+secs.forEach(s=>s&&spy.observe(s));
+</script>
+<a href="AI体验指标体系研究汇总.html" title="返回研究汇总" aria-label="返回研究汇总" style="position:fixed;right:34px;bottom:88px;width:46px;height:46px;border-radius:50%;background:#2E2A72;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Noto Serif SC',serif;font-weight:600;font-size:15px;text-decoration:none;z-index:91;box-shadow:0 6px 20px -6px rgba(27,23,71,.45)">汇</a>
+</body>
+</html>

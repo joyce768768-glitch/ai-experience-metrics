@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 体验 / Agent 体验指标体系 · 完整框架</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F8F7F3;
+  --paper-2:#FFFFFF;
+  --ink:#16151C;
+  --ink-2:#3B3A44;
+  --ink-3:#8B8A93;
+  --indigo:#4338CA;
+  --indigo-deep:#2E2A72;
+  --indigo-mist:#EBECF7;
+  --indigo-fog:#F3F4FB;
+  --hair:#E5E3DA;
+  --hair-2:#D8D6CC;
+  --serif:'Noto Serif SC',serif;
+  --sans:'Noto Sans SC',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans);
+  background:var(--paper);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+::selection{background:var(--indigo);color:#fff}
+
+/* ---------- 进度条 ---------- */
+.progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--indigo);z-index:100}
+
+/* ---------- 纸张颗粒 ---------- */
+.grain{
+  position:fixed;inset:0;pointer-events:none;z-index:99;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+}
+
+/* ---------- HERO ---------- */
+.hero{
+  position:relative;
+  padding:150px 48px 110px;
+  max-width:1280px;
+  margin:0 auto;
+  overflow:hidden;
+}
+.hero::before{
+  content:"";position:absolute;top:-320px;right:-220px;width:760px;height:760px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(67,56,202,.10),rgba(67,56,202,0));
+  pointer-events:none;
+}
+.hero::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(22,21,28,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(22,21,28,.028) 1px,transparent 1px);
+  background-size:72px 72px;
+  -webkit-mask-image:radial-gradient(ellipse 70% 60% at 30% 20%,#000 30%,transparent 75%);
+          mask-image:radial-gradient(ellipse 70% 60% at 30% 20%,#000 30%,transparent 75%);
+}
+.hero-inner{position:relative;z-index:2;max-width:880px}
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.32em;color:var(--indigo);
+  display:flex;align-items:center;gap:16px;margin-bottom:38px;
+}
+.eyebrow::before{content:"";width:44px;height:1px;background:var(--indigo)}
+.hero h1{
+  font-family:var(--serif);font-weight:900;
+  font-size:clamp(42px,6.4vw,76px);line-height:1.18;letter-spacing:.02em;
+}
+.hero h1 .en{font-family:var(--mono);font-weight:400;font-size:.42em;color:var(--indigo);letter-spacing:.08em;vertical-align:.55em;margin-right:.5em}
+.hero h1 em{font-style:normal;color:var(--indigo)}
+.hero-sub{
+  margin-top:30px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+}
+.frame-tag{
+  font-family:var(--serif);font-weight:600;font-size:15px;color:var(--indigo);
+  border:1px solid var(--indigo);padding:7px 18px;letter-spacing:.42em;text-indent:.42em;
+}
+.hero-meta{font-family:var(--mono);font-size:12px;color:var(--ink-3);letter-spacing:.14em}
+.hero-lede{margin-top:58px;max-width:720px}
+.hero-lede p{font-size:17px;line-height:2.15;color:var(--ink-2);letter-spacing:.015em}
+.hero-lede p+p{margin-top:1.4em}
+.hero-lede strong{font-weight:600;color:var(--ink)}
+.hero-vertical{
+  position:absolute;top:170px;right:40px;z-index:2;
+  writing-mode:vertical-rl;font-family:var(--mono);font-size:11px;
+  letter-spacing:.5em;color:var(--ink-3);
+  border-left:1px solid var(--hair-2);padding-left:18px;height:340px;
+}
+
+/* ---------- 六问卡片 ---------- */
+.six{margin-top:72px;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--hair);border:1px solid var(--hair)}
+.six .q{
+  background:var(--paper);padding:30px 26px 34px;position:relative;
+  transition:background .35s;
+}
+.six .q:hover{background:var(--paper-2)}
+.six .q .no{font-family:var(--serif);font-weight:200;font-size:15px;color:var(--indigo);letter-spacing:.2em}
+.six .q h3{font-family:var(--serif);font-weight:700;font-size:18px;margin:12px 0 12px;letter-spacing:.06em}
+.six .q p{font-size:13.5px;line-height:1.95;color:var(--ink-3)}
+.six-note{
+  margin-top:26px;text-align:center;font-family:var(--serif);font-size:15px;
+  color:var(--ink-2);letter-spacing:.3em;text-indent:.3em;
+}
+.six-note span{color:var(--indigo)}
+
+/* ---------- 布局骨架 ---------- */
+.shell{
+  max-width:1280px;margin:0 auto;padding:0 48px 140px;
+  display:grid;grid-template-columns:200px minmax(0,1fr);gap:72px;
+}
+
+/* ---------- 目录 ---------- */
+.toc{position:sticky;top:0;height:100vh;padding-top:120px;align-self:start}
+.toc-label{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--ink-3);margin-bottom:26px}
+.toc a{
+  display:flex;align-items:baseline;gap:12px;text-decoration:none;
+  padding:9px 0;color:var(--ink-3);font-size:13.5px;letter-spacing:.05em;
+  border-left:1px solid transparent;transition:color .3s;position:relative;
+}
+.toc a .n{font-family:var(--serif);font-weight:400;font-size:13px;width:20px;color:var(--hair-2);transition:color .3s}
+.toc a:hover{color:var(--ink)}
+.toc a.active{color:var(--ink);font-weight:500}
+.toc a.active .n{color:var(--indigo)}
+.toc a.active::before{
+  content:"";position:absolute;left:-13px;top:50%;transform:translateY(-50%);
+  width:5px;height:5px;background:var(--indigo);border-radius:50%;
+}
+
+/* ---------- 章节 ---------- */
+main{min-width:0;padding-top:120px}
+.sec{margin-bottom:150px;scroll-margin-top:24px}
+.sec-head{display:flex;align-items:flex-start;gap:26px;margin-bottom:26px}
+.sec-num{
+  font-family:var(--serif);font-weight:200;font-size:88px;line-height:.9;
+  color:transparent;-webkit-text-stroke:1.2px rgba(67,56,202,.55);
+  flex-shrink:0;user-select:none;
+}
+.sec-head-txt{padding-top:8px}
+.sec-chapter{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--indigo);margin-bottom:10px}
+.sec-title{font-family:var(--serif);font-weight:700;font-size:clamp(26px,3.2vw,36px);letter-spacing:.04em;line-height:1.3}
+.sec-rule{height:1px;background:var(--hair-2);margin:34px 0 44px;position:relative}
+.sec-rule::before{content:"";position:absolute;left:0;top:-1px;width:72px;height:3px;background:var(--indigo)}
+
+.prose p{font-size:16.5px;line-height:2.12;color:var(--ink-2);letter-spacing:.012em;margin-bottom:1.5em;max-width:740px}
+.prose p strong{font-weight:600;color:var(--ink)}
+.prose .mark{background:linear-gradient(transparent 68%,var(--indigo-mist) 68%)}
+
+/* 子标题 */
+h3.dim{
+  font-family:var(--serif);font-weight:700;font-size:23px;letter-spacing:.04em;
+  margin:74px 0 6px;display:flex;align-items:baseline;gap:14px;
+}
+h3.dim .idx{font-family:var(--serif);font-weight:200;font-size:34px;color:var(--indigo)}
+h3.dim .en{font-family:var(--mono);font-weight:400;font-size:11px;letter-spacing:.18em;color:var(--ink-3);margin-left:4px}
+.dim-lede{font-size:15.5px;color:var(--ink-3);line-height:1.9;margin-bottom:26px;max-width:680px}
+
+/* ---------- 表格 ---------- */
+.tw{overflow-x:auto;margin:30px 0 10px;border-top:1px solid var(--ink)}
+table{width:100%;border-collapse:collapse;min-width:620px}
+th{
+  font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.18em;
+  color:var(--indigo);text-align:left;padding:14px 18px 12px;
+  border-bottom:1px solid var(--hair-2);white-space:nowrap;
+}
+td{
+  font-size:14.5px;line-height:1.85;padding:15px 18px;vertical-align:top;
+  border-bottom:1px solid var(--hair);color:var(--ink-2);
+}
+td:first-child{font-weight:500;color:var(--ink);white-space:nowrap}
+td.mono{font-family:var(--mono);font-size:12.5px;color:var(--indigo);letter-spacing:.02em;white-space:nowrap}
+tbody tr{transition:background .25s}
+tbody tr:hover{background:var(--indigo-fog)}
+
+/* ---------- 引述 / 关键问题 ---------- */
+.pull{
+  margin:40px 0;padding:26px 30px;border-left:2px solid var(--indigo);
+  background:var(--paper-2);max-width:720px;
+}
+.pull .t{font-family:var(--serif);font-weight:700;font-size:17px;letter-spacing:.04em;margin-bottom:10px;color:var(--ink)}
+.pull p{font-size:14.5px;line-height:2;color:var(--ink-2);margin:0}
+.qlist{margin:34px 0 0;padding:0;list-style:none;max-width:720px}
+.qlist li{
+  position:relative;padding:10px 0 10px 34px;font-size:15.5px;line-height:2;color:var(--ink-2);
+  border-bottom:1px dashed var(--hair);
+}
+.qlist li::before{
+  content:"？";position:absolute;left:0;top:10px;
+  font-family:var(--serif);font-weight:600;color:var(--indigo);font-size:15px;
+}
+.src{
+  margin:18px 0 0;display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-3);
+}
+.src::before{content:"◈";color:var(--indigo);font-size:10px}
+
+/* ---------- 总体结构图 ---------- */
+.arch{margin:46px 0 10px}
+.north{
+  background:var(--indigo-deep);color:#fff;padding:38px 42px;position:relative;overflow:hidden;
+}
+.north::after{
+  content:"★";position:absolute;right:26px;top:50%;transform:translateY(-50%);
+  font-size:120px;color:rgba(255,255,255,.06);line-height:1;
+}
+.north .tag{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:#B9BDF0;margin-bottom:14px}
+.north h4{font-family:var(--serif);font-weight:700;font-size:26px;letter-spacing:.06em;margin-bottom:10px}
+.north p{font-size:14.5px;color:#CDCFF2;line-height:1.9;max-width:520px}
+.arch-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--hair);
+  border:1px solid var(--hair);border-top:none;
+}
+.arch-grid .a{
+  background:var(--paper-2);padding:24px 24px 26px;transition:background .3s;
+}
+.arch-grid .a:hover{background:var(--indigo-fog)}
+.arch-grid .a .no{font-family:var(--serif);font-weight:200;font-size:26px;color:var(--indigo);line-height:1}
+.arch-grid .a h5{font-family:var(--serif);font-weight:700;font-size:16px;margin:12px 0 8px;letter-spacing:.05em}
+.arch-grid .a p{font-size:12.5px;color:var(--ink-3);line-height:1.8}
+.arch-base{
+  border:1px solid var(--hair);border-top:none;background:var(--paper);
+  padding:20px 26px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+}
+.arch-base .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--indigo);white-space:nowrap}
+.arch-base .chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  font-size:12.5px;color:var(--ink-2);border:1px solid var(--hair-2);
+  padding:5px 14px;border-radius:999px;background:var(--paper-2);white-space:nowrap;
+}
+
+/* 两层说明 */
+.layers-2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--hair);border:1px solid var(--hair);margin:44px 0 30px}
+.layers-2 .l2{background:var(--paper-2);padding:28px 30px}
+.layers-2 .l2 .k{font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--indigo);margin-bottom:12px}
+.layers-2 .l2 h5{font-family:var(--serif);font-weight:700;font-size:18px;margin-bottom:10px;letter-spacing:.04em}
+.layers-2 .l2 p{font-size:13.5px;line-height:1.95;color:var(--ink-2)}
+
+/* ---------- 四级结构 ---------- */
+.lvl-stack{margin:44px 0;display:flex;flex-direction:column;gap:10px;max-width:760px}
+.lvl{display:grid;grid-template-columns:96px 1fr;align-items:stretch}
+.lvl .key{
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:500;font-size:15px;letter-spacing:.08em;
+}
+.lvl .body{padding:22px 28px}
+.lvl .body h5{font-family:var(--serif);font-weight:700;font-size:17px;margin-bottom:6px;letter-spacing:.04em}
+.lvl .body .ms{font-size:13px;line-height:1.8;margin-bottom:6px}
+.lvl .body .d{font-size:12.5px;line-height:1.8}
+.lvl1 .key{background:var(--indigo-deep);color:#fff}
+.lvl1 .body{background:var(--indigo-deep);color:#fff}
+.lvl1 .body .ms{color:#D9DBF5}
+.lvl1 .body .d{color:#A9ADE0}
+.lvl2 .key{background:var(--indigo);color:#fff}
+.lvl2 .body{background:var(--indigo);color:#fff}
+.lvl2 .body .ms{color:#DCDEF9}
+.lvl2 .body .d{color:#B9BCEF}
+.lvl3 .key{background:var(--indigo-mist);color:var(--indigo-deep)}
+.lvl3 .body{background:var(--indigo-fog)}
+.lvl3 .body .ms{color:var(--ink-2)}
+.lvl3 .body .d{color:var(--ink-3)}
+.lvl4 .key{background:var(--paper-2);color:var(--indigo);border:1px solid var(--hair-2);border-right:none}
+.lvl4 .body{background:var(--paper-2);border:1px solid var(--hair-2)}
+.lvl4 .body .ms{color:var(--ink-2)}
+.lvl4 .body .d{color:var(--ink-3)}
+
+/* 因果链 */
+.chain-wrap{margin:40px 0;padding:30px 30px 26px;background:var(--paper-2);border:1px solid var(--hair);max-width:760px}
+.chain-wrap .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--indigo);margin-bottom:18px}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.chain .c{
+  font-size:13.5px;font-weight:500;color:var(--ink);
+  border:1px solid var(--hair-2);background:var(--paper);
+  padding:8px 16px;border-radius:999px;white-space:nowrap;
+}
+.chain .c:first-child{border-color:var(--indigo);color:var(--indigo)}
+.chain .c:last-child{background:var(--indigo-deep);border-color:var(--indigo-deep);color:#fff}
+.chain .a{font-family:var(--mono);color:var(--ink-3);font-size:13px}
+
+/* ---------- 优先级表 ---------- */
+.badge{
+  display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+  padding:4px 12px;border-radius:999px;
+}
+.badge.p0{background:var(--indigo-deep);color:#fff}
+.badge.p1{border:1px solid var(--indigo);color:var(--indigo);background:var(--paper-2)}
+
+/* Agent 权重卡 */
+.wg{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--hair);border:1px solid var(--hair);margin:40px 0 14px}
+.wg .w{background:var(--paper-2);padding:30px 30px 32px;transition:background .3s;position:relative}
+.wg .w:hover{background:var(--indigo-fog)}
+.wg .w .cat{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--indigo);margin-bottom:12px}
+.wg .w h5{font-family:var(--serif);font-weight:700;font-size:18px;margin-bottom:12px;letter-spacing:.04em}
+.wg .w p{font-size:13.5px;line-height:2;color:var(--ink-2)}
+.wg .w .warn{margin-top:12px;font-size:12.5px;color:var(--indigo);font-weight:500}
+
+/* ---------- 证据卡 ---------- */
+.ev{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--hair);border:1px solid var(--hair);margin:40px 0 36px}
+.ev .e{background:var(--paper-2);padding:26px 22px 30px;transition:background .3s}
+.ev .e:hover{background:var(--indigo-fog)}
+.ev .e .no{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--indigo)}
+.ev .e h5{font-family:var(--serif);font-weight:700;font-size:16.5px;margin:10px 0 10px;letter-spacing:.04em}
+.ev .e p{font-size:12.5px;line-height:1.9;color:var(--ink-3)}
+
+/* ---------- 公式 ---------- */
+.formulas{margin:36px 0;display:flex;flex-direction:column;gap:1px;background:var(--hair);border:1px solid var(--hair);max-width:760px}
+.formula{
+  background:var(--paper-2);padding:30px 26px;display:flex;align-items:center;
+  justify-content:center;gap:20px;flex-wrap:wrap;
+}
+.formula .f-name{font-family:var(--serif);font-weight:700;font-size:17px;letter-spacing:.06em;color:var(--ink)}
+.formula .f-eq{font-family:var(--mono);color:var(--indigo);font-size:18px}
+.formula .f-frac{display:inline-flex;flex-direction:column;text-align:center;font-size:13.5px;color:var(--ink-2)}
+.formula .f-num{padding:0 14px 8px;border-bottom:1.5px solid var(--ink)}
+.formula .f-den{padding:8px 14px 0}
+.formula .f-tail{font-family:var(--mono);font-size:14px;color:var(--indigo)}
+
+/* ---------- 三问 ---------- */
+.three{margin:44px 0;max-width:760px}
+.three .t3{
+  display:grid;grid-template-columns:76px 1fr;gap:20px;padding:28px 0;
+  border-bottom:1px solid var(--hair);align-items:start;
+}
+.three .t3:first-child{border-top:1px solid var(--ink)}
+.three .no{font-family:var(--serif);font-weight:200;font-size:44px;line-height:1;color:transparent;-webkit-text-stroke:1px rgba(67,56,202,.6)}
+.three h5{font-family:var(--serif);font-weight:700;font-size:18px;margin-bottom:8px;letter-spacing:.03em}
+.three p{font-size:14.5px;line-height:1.95;color:var(--ink-2)}
+
+/* ---------- 结语 ---------- */
+.coda{
+  margin:60px 0 0;padding:46px 48px;background:var(--indigo-deep);color:#fff;
+  position:relative;overflow:hidden;max-width:none;
+}
+.coda::after{
+  content:"指";position:absolute;right:-30px;bottom:-60px;
+  font-family:var(--serif);font-weight:900;font-size:280px;color:rgba(255,255,255,.05);line-height:1;
+}
+.coda .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:#B9BDF0;margin-bottom:20px}
+.coda p{font-size:16px;line-height:2.2;color:#E2E3F8;max-width:720px;position:relative;z-index:2}
+.coda strong{color:#fff;font-weight:600}
+.coda .dic{color:#fff;border-bottom:1px solid rgba(255,255,255,.5);font-weight:600}
+
+/* ---------- 页脚 ---------- */
+footer{
+  border-top:1px solid var(--hair-2);padding:44px 48px;
+  max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;
+  font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--ink-3);flex-wrap:wrap;gap:12px;
+}
+
+/* ---------- 返回顶部 ---------- */
+.top{
+  position:fixed;right:34px;bottom:34px;width:46px;height:46px;border-radius:50%;
+  background:var(--paper-2);border:1px solid var(--hair-2);color:var(--indigo);
+  font-size:16px;cursor:pointer;opacity:0;pointer-events:none;transition:.35s;z-index:90;
+  display:flex;align-items:center;justify-content:center;
+}
+.top.show{opacity:1;pointer-events:auto}
+.top:hover{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+
+/* ---------- 入场动画 ---------- */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.22,.61,.36,1),transform .9s cubic-bezier(.22,.61,.36,1)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+/* ---------- 响应式 ---------- */
+@media (max-width:1080px){
+  .toc{display:none}
+  .shell{grid-template-columns:1fr;gap:0}
+  .hero-vertical{display:none}
+}
+@media (max-width:760px){
+  .hero{padding:100px 24px 80px}
+  .shell{padding:0 24px 100px}
+  .six,.arch-grid,.layers-2,.wg{grid-template-columns:1fr}
+  .ev{grid-template-columns:1fr 1fr}
+  .sec-num{font-size:56px}
+  .lvl{grid-template-columns:64px 1fr}
+  .lvl .key{font-size:12px}
+  .coda{padding:36px 26px}
+  footer{padding:36px 24px}
+  .sec{margin-bottom:100px}
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="grain"></div>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <div class="hero-vertical">USER GOAL SUCCESS RATE · 北极星指标</div>
+  <div class="hero-inner">
+    <div class="eyebrow rv">AI EXPERIENCE METRICS FRAMEWORK</div>
+    <h1 class="rv" style="transition-delay:.08s"><span class="en">AI / AGENT</span><br>体验<em>指标体系</em></h1>
+    <div class="hero-sub rv" style="transition-delay:.16s">
+      <span class="frame-tag">完整框架</span>
+      <span class="hero-meta">FROM NORTH STAR TO LONG-TERM TRUST</span>
+    </div>
+    <div class="hero-lede">
+      <p class="rv" style="transition-delay:.24s">如果从 <strong>AI 产品经理、UX 设计师和 Agent 产品负责人</strong>的视角构建指标体系，建议不要简单地把传统互联网产品的体验指标搬过来，而是建立一套能够衡量 —— <strong>用户是否实现目标、AI 是否可靠地完成任务、用户是否愿意把更多自主权交给 AI</strong> 的指标体系。</p>
+      <p class="rv" style="transition-delay:.3s">传统软件主要衡量用户如何使用功能；AI 产品除了衡量交互体验，还需要衡量<strong>模型理解、生成、决策、工具调用、多步骤执行和自主纠错</strong>所带来的体验结果。尤其对于 Codex、Deep Research、AI 医疗助手、儿童成长 Agent 等复杂 Agent，体验的核心不再只是「界面是否好用」，而是：</p>
+    </div>
+    <div class="six rv" style="transition-delay:.38s">
+      <div class="q"><div class="no">壹</div><h3>理解体验</h3><p>AI 是否真正理解用户的意图、上下文和隐含需求？</p></div>
+      <div class="q"><div class="no">贰</div><h3>协作体验</h3><p>用户能否有效地指导、纠正和约束 AI？</p></div>
+      <div class="q"><div class="no">叁</div><h3>执行体验</h3><p>AI 能否把目标转化为可用的结果？</p></div>
+      <div class="q"><div class="no">肆</div><h3>信任体验</h3><p>用户是否知道 AI 正在做什么、为什么这样做，以及何时应该介入？</p></div>
+      <div class="q"><div class="no">伍</div><h3>自主体验</h3><p>用户是否可以放心地将任务交给 AI，而不必持续监督？</p></div>
+      <div class="q"><div class="no">陆</div><h3>结果体验</h3><p>最终交付的结果是否正确、完整、符合预期，并且真正产生价值？</p></div>
+    </div>
+    <div class="six-note rv" style="transition-delay:.46s">这六个维度构成了 <span>AI 体验设计</span> 的核心问题</div>
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- ================= 目录 ================= -->
+  <nav class="toc" id="toc">
+    <div class="toc-label">CONTENTS · 目录</div>
+    <a href="#s1" class="active"><span class="n">一</span>总体结构</a>
+    <a href="#s2"><span class="n">二</span>六大体验维度</a>
+    <a href="#s3"><span class="n">三</span>Agent 专属指标</a>
+    <a href="#s4"><span class="n">四</span>四级指标结构</a>
+    <a href="#s5"><span class="n">五</span>优先监测指标</a>
+    <a href="#s6"><span class="n">六</span>测量方法</a>
+    <a href="#s7"><span class="n">七</span>产品判断</a>
+  </nav>
+
+  <main>
+
+  <!-- ================= 一、总体结构 ================= -->
+  <section class="sec" id="s1">
+    <div class="sec-head rv">
+      <div class="sec-num">一</div>
+      <div class="sec-head-txt">
+        <div class="sec-chapter">CHAPTER 01 · OVERALL STRUCTURE</div>
+        <h2 class="sec-title">AI 体验指标的总体结构</h2>
+      </div>
+    </div>
+    <div class="sec-rule rv"></div>
+
+    <div class="arch rv">
+      <div class="north">
+        <div class="tag">NORTH STAR · 北极星指标</div>
+        <h4>用户目标成功率</h4>
+        <p>用户是否以可接受的成本，获得了可信、可用的结果。</p>
+      </div>
+      <div class="arch-grid">
+        <div class="a"><div class="no">1</div><h5>目标与理解体验</h5><p>意图理解 · 上下文理解 · 需求澄清</p></div>
+        <div class="a"><div class="no">2</div><h5>交互与协作体验</h5><p>沟通效率 · 可控性 · 纠错成本</p></div>
+        <div class="a"><div class="no">3</div><h5>信任与安全体验</h5><p>可信度 · 透明度 · 风险感知</p></div>
+        <div class="a"><div class="no">4</div><h5>Agent 执行体验</h5><p>自主执行 · 任务进度 · 恢复能力</p></div>
+        <div class="a"><div class="no">5</div><h5>结果与价值体验</h5><p>质量 · 完整性 · 实用性 · 任务收益</p></div>
+        <div class="a"><div class="no">6</div><h5>情绪与长期关系体验</h5><p>认知负担 · 挫败感 · 持续使用 · 依赖质量</p></div>
+      </div>
+      <div class="arch-base">
+        <span class="lbl">底层支撑指标</span>
+        <div class="chips">
+          <span class="chip">响应延迟</span><span class="chip">输出稳定性</span><span class="chip">工具调用成功率</span><span class="chip">上下文保持率</span><span class="chip">任务恢复率</span><span class="chip">成本</span><span class="chip">安全与隐私</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="rv">这套框架分为两层：</p>
+
+    <div class="layers-2 rv">
+      <div class="l2">
+        <div class="k">LAYER A · 体验结果层</div>
+        <h5>用户最终感受到什么</h5>
+        <p>任务有没有完成，是否值得继续使用。</p>
+      </div>
+      <div class="l2">
+        <div class="k">LAYER B · 体验驱动层</div>
+        <h5>为什么会产生这样的体验</h5>
+        <p>模型、Agent 编排、工具、界面和系统性能。</p>
+      </div>
+    </div>
+
+    <p class="rv"><strong>两层必须关联起来。</strong>例如，用户觉得 Agent「不靠谱」，既可能因为回答错误，也可能因为执行过程不透明、进度长时间不更新，或者一次失败后无法恢复。<span class="mark">单看满意度无法定位问题。</span></p>
+  </section>
+
+  <!-- ================= 二、六大体验维度 ================= -->
+  <section class="sec" id="s2">
+    <div class="sec-head rv">
+      <div class="sec-num">二</div>
+      <div class="sec-head-txt">
+        <div class="sec-chapter">CHAPTER 02 · SIX DIMENSIONS</div>
+        <h2 class="sec-title">六大体验维度与核心指标</h2>
+      </div>
+    </div>
+    <div class="sec-rule rv"></div>
+
+    <!-- 2.1 -->
+    <h3 class="dim rv"><span class="idx">1.</span>目标与理解体验<span class="en">INTENT & CONTEXT</span></h3>
+    <p class="dim-lede rv">衡量 AI 是否理解用户真正想做的事，而不只是理解字面指令。</p>
+    <div class="tw rv"><table>
+      <thead><tr><th>指标</th><th>英文 / 缩写</th><th>定义与计算方式</th></tr></thead>
+      <tbody>
+        <tr><td>意图识别准确率</td><td class="mono">Intent Accuracy</td><td>正确识别用户真实意图的请求数 ÷ 总评测请求数</td></tr>
+        <tr><td>目标对齐率</td><td class="mono">Goal Alignment Rate</td><td>最终计划或行为符合用户目标的任务数 ÷ 总任务数</td></tr>
+        <tr><td>约束遵循率</td><td class="mono">Constraint Adherence</td><td>满足用户明确提出的限制条件数 ÷ 应满足的限制条件数</td></tr>
+        <tr><td>上下文理解准确率</td><td class="mono">Context Understanding</td><td>正确利用对话历史、文件、用户状态等信息的评测比例</td></tr>
+        <tr><td>个性化适配率</td><td class="mono">Personalization Fit</td><td>输出符合用户已知偏好、能力和情境的任务比例</td></tr>
+        <tr><td>需求澄清有效率</td><td class="mono">Clarification Effectiveness</td><td>通过澄清消除关键歧义，并使后续任务正确推进的比例</td></tr>
+        <tr><td>误解修复率</td><td class="mono">Misunderstanding Recovery</td><td>发生误解后，通过后续交互恢复到正确目标的比例</td></tr>
+        <tr><td>意图漂移率</td><td class="mono">Intent Drift Rate</td><td>多轮或多步骤执行中偏离原始目标的任务比例</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="pull rv">
+      <div class="t">体验研究的关键问题</div>
+      <ul class="qlist" style="margin-top:6px">
+        <li>用户需要重复多少次才能让 AI 理解？</li>
+        <li>用户说「帮我优化」时，AI 能否结合上下文理解优化目标？</li>
+        <li>用户改变主意后，AI 能否正确更新目标，而不是继续执行旧计划？</li>
+        <li>AI 是真的理解约束，还是只在回复中复述约束？</li>
+      </ul>
+    </div>
+
+    <p class="rv"><strong>举例：</strong>用户要求「优化这个网站，但不要改变现有品牌风格」。如果 AI 把页面改得更漂亮，却破坏了品牌规范，那么它可能具备较好的视觉生成能力，但<span class="mark">目标对齐体验较差</span>。</p>
+
+    <!-- 2.2 -->
+    <h3 class="dim rv"><span class="idx">2.</span>交互与协作体验<span class="en">INTERACTION & COLLABORATION</span></h3>
+    <p class="dim-lede rv">衡量用户能否低成本地表达、调整、纠正 AI，并与 AI 共同完成任务。</p>
+    <div class="tw rv"><table>
+      <thead><tr><th>指标</th><th>英文 / 缩写</th><th>定义与计算方式</th></tr></thead>
+      <tbody>
+        <tr><td>首次交互成功率</td><td class="mono">First-Interaction Success</td><td>首轮交互即达成预定目标的会话数 ÷ 总会话数</td></tr>
+        <tr><td>任务完成轮次</td><td class="mono">Turns to Completion</td><td>从开始到完成任务的平均交互轮数</td></tr>
+        <tr><td>澄清负担</td><td class="mono">Clarification Burden</td><td>用户为补充信息、解释需求付出的轮次或时间</td></tr>
+        <tr><td>用户纠错次数</td><td class="mono">User Correction Count</td><td>每个任务中用户主动修正 AI 的平均次数</td></tr>
+        <tr><td>纠错成功率</td><td class="mono">Correction Success Rate</td><td>用户纠正后达到预期结果的次数 ÷ 总纠正次数</td></tr>
+        <tr><td>指令可表达性</td><td class="mono">Prompt Expressibility</td><td>用户能否用自然、简洁的表达获得目标结果</td></tr>
+        <tr><td>操作可控性</td><td class="mono">Controllability</td><td>用户能否有效改变 AI 的方向、范围、参数和结果</td></tr>
+        <tr><td>中断响应率</td><td class="mono">Interruption Responsiveness</td><td>用户发出停止、暂停或修改指令后被正确执行的比例</td></tr>
+        <tr><td>协作效率</td><td class="mono">Collaboration Efficiency</td><td>达成目标所需的人机总时间、交互轮数或操作成本</td></tr>
+        <tr><td>多模态交互成功率</td><td class="mono">Multimodal Interaction Success</td><td>通过文本、语音、图片、文件等方式成功完成的任务比例</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="pull rv">
+      <div class="t">需要特别区分：交互次数少，不一定代表体验好</div>
+      <p>复杂任务可能需要必要的确认和澄清。更合理的目标是<strong>减少无效交互，而不是消灭所有交互</strong>。例如，用户让 Agent 发送一封重要商务邮件，AI 在发送前确认收件人和内容，可能比直接发送更好的体验；对低风险的文本润色，则不一定需要同样的确认流程。</p>
+    </div>
+
+    <!-- 2.3 -->
+    <h3 class="dim rv"><span class="idx">3.</span>信任与安全体验<span class="en">TRUST & SAFETY</span></h3>
+    <p class="dim-lede rv">衡量用户是否能正确判断 AI 的能力、局限和风险，以及系统是否让用户拥有实际控制权。</p>
+    <div class="tw rv"><table>
+      <thead><tr><th>指标</th><th>英文 / 缩写</th><th>定义与计算方式</th></tr></thead>
+      <tbody>
+        <tr><td>感知可靠性</td><td class="mono">Perceived Reliability</td><td>用户对 AI 稳定、准确、可依赖程度的主观评分</td></tr>
+        <tr><td>信任校准度</td><td class="mono">Trust Calibration</td><td>用户信任程度与 AI 实际可靠程度之间的匹配程度</td></tr>
+        <tr><td>适当依赖率</td><td class="mono">Appropriate Reliance</td><td>用户在适合的情况下采纳 AI、在不适合时拒绝 AI 的比例</td></tr>
+        <tr><td>过度信任率</td><td class="mono">Over-reliance Rate</td><td>用户未经合理核验便采纳错误或高风险输出的比例</td></tr>
+        <tr><td>信任不足率</td><td class="mono">Under-reliance Rate</td><td>用户拒绝采纳实际上可靠且有帮助的输出的比例</td></tr>
+        <tr><td>不确定性表达有效率</td><td class="mono">Uncertainty Communication</td><td>AI 的不确定性提示能否帮助用户作出更合理判断</td></tr>
+        <tr><td>可解释性感知</td><td class="mono">Perceived Explainability</td><td>用户是否理解关键建议、决策或行动的依据</td></tr>
+        <tr><td>行为可预测性</td><td class="mono">Behavioral Predictability</td><td>AI 实际行动与用户预期之间的一致程度</td></tr>
+        <tr><td>安全违规率</td><td class="mono">Safety Violation Rate</td><td>违反安全政策、权限或关键约束的任务比例</td></tr>
+        <tr><td>隐私感知与控制</td><td class="mono">Privacy Perception & Control</td><td>用户对数据使用透明度、隐私保护和授权能力的评价</td></tr>
+      </tbody>
+    </table></div>
+
+    <p class="rv"><strong>信任并不等于满意度。</strong>用户可能喜欢 AI 的表达风格，却不应该信任它做高风险决策；也可能觉得 AI 不够亲切，却认可它的专业可靠性。有关人机交互的研究也强调，<span class="mark">解释性、目标一致性和可控性</span>会影响用户对 Agent 的可靠性感知。</p>
+    <div class="src rv">REF — FRONTIERS</div>
+
+    <!-- 2.4 -->
+    <h3 class="dim rv"><span class="idx">4.</span>Agent 执行体验<span class="en">AGENCY & EXECUTION</span></h3>
+    <p class="dim-lede rv">这是 Agent 与普通聊天机器人的重要分界：用户不只是等待一个回答，而是把一个目标委托给 AI，让它规划、调用工具、执行并处理异常。</p>
+    <div class="tw rv"><table>
+      <thead><tr><th>指标</th><th>英文 / 缩写</th><th>定义与计算方式</th></tr></thead>
+      <tbody>
+        <tr><td>委托成功率</td><td class="mono">Delegation Success Rate</td><td>用户将任务交给 Agent 后，最终按要求完成的比例</td></tr>
+        <tr><td>端到端任务成功率</td><td class="mono">End-to-End Task Success</td><td>从目标输入到最终交付均符合验收标准的任务比例</td></tr>
+        <tr><td>计划可理解性</td><td class="mono">Plan Understandability</td><td>用户能否理解 Agent 的执行计划和关键步骤</td></tr>
+        <tr><td>计划符合度</td><td class="mono">Plan Adherence</td><td>实际执行路径符合有效计划的程度</td></tr>
+        <tr><td>执行进度可见性</td><td class="mono">Progress Visibility</td><td>用户能否及时获知当前状态、已完成事项和下一步</td></tr>
+        <tr><td>自主完成率</td><td class="mono">Autonomous Completion Rate</td><td>无需用户中途介入即可成功完成的任务比例</td></tr>
+        <tr><td>人工介入率</td><td class="mono">Human Intervention Rate</td><td>执行过程中需要用户介入的任务比例</td></tr>
+        <tr><td>中途接管成功率</td><td class="mono">Takeover Success Rate</td><td>用户接管后能够顺利继续完成任务的比例</td></tr>
+        <tr><td>异常恢复率</td><td class="mono">Failure Recovery Rate</td><td>出现错误后恢复并最终完成任务的比例</td></tr>
+        <tr><td>可逆操作保障率</td><td class="mono">Reversibility Coverage</td><td>对符合要求的高风险或重要操作，具备撤销、回滚或恢复机制的比例</td></tr>
+        <tr><td>状态一致性</td><td class="mono">State Consistency</td><td>Agent 的计划、工具执行状态与用户看到的状态一致的程度</td></tr>
+        <tr><td>长任务持续性</td><td class="mono">Long-horizon Completion</td><td>多步骤、长时间任务最终成功完成的比例</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="pull rv">
+      <div class="t">常见误区：自主完成率越高，体验就一定越好吗？</div>
+      <p>并不一定。自动化越强，用户可能越省力；但如果用户失去对重要行动的控制，也可能感到不安。近期关于 Agent 自主程度的实证研究发现，<strong>中等自主性、同时保留用户干预能力</strong>的方案，在效率和控制偏好之间可能取得更好的平衡。</p>
+    </div>
+    <div class="src rv">REF — SCIENCEDIRECT</div>
+
+    <p class="rv">因此，执行体验要同时衡量：</p>
+    <ul class="qlist rv" style="list-style:none">
+      <li style="padding-left:34px">Agent 能否自己完成任务。</li>
+      <li style="padding-left:34px">用户是否知道它在做什么。</li>
+      <li style="padding-left:34px">用户能否在关键节点介入。</li>
+      <li style="padding-left:34px">出错后是否能恢复，而不是要求用户从头再来。</li>
+    </ul>
+
+    <!-- 2.5 -->
+    <h3 class="dim rv"><span class="idx">5.</span>结果与价值体验<span class="en">OUTCOME & VALUE</span></h3>
+    <p class="dim-lede rv">衡量交付结果是否正确、完整、可用，以及 AI 是否真正改善了用户的工作或生活。</p>
+    <div class="tw rv"><table>
+      <thead><tr><th>指标</th><th>英文 / 缩写</th><th>定义与计算方式</th></tr></thead>
+      <tbody>
+        <tr><td>结果正确率</td><td class="mono">Output Correctness</td><td>经事实核查、测试或专家评价后正确的输出比例</td></tr>
+        <tr><td>结果完整率</td><td class="mono">Output Completeness</td><td>满足全部必要交付要求的任务比例</td></tr>
+        <tr><td>结果相关性</td><td class="mono">Output Relevance</td><td>输出与用户目标和当前情境的相关程度</td></tr>
+        <tr><td>结果可用率</td><td class="mono">Usable Output Rate</td><td>无需重大修改即可实际使用的输出比例</td></tr>
+        <tr><td>首次交付通过率</td><td class="mono">First-pass Acceptance</td><td>首次交付即通过用户验收的任务比例</td></tr>
+        <tr><td>返工率</td><td class="mono">Rework Rate</td><td>因结果不符合要求而需要重新执行或修改的任务比例</td></tr>
+        <tr><td>用户验收率</td><td class="mono">User Acceptance Rate</td><td>用户明确接受最终结果的任务比例</td></tr>
+        <tr><td>任务耗时改善率</td><td class="mono">Time Saved</td><td>相比传统基线节省的时间 ÷ 基线耗时</td></tr>
+        <tr><td>质量改善幅度</td><td class="mono">Quality Improvement</td><td>AI 辅助结果与传统方式结果之间的质量差异</td></tr>
+        <tr><td>净价值实现率</td><td class="mono">Net Value Realization</td><td>实际获得的任务收益，扣除使用、核验和返工成本后的结果</td></tr>
+      </tbody>
+    </table></div>
+
+    <p class="rv">这里最重要的是区分<strong>三种成功</strong>：</p>
+    <ul class="qlist rv" style="list-style:none">
+      <li style="padding-left:34px"><strong>技术成功</strong> —— 模型生成了内容，工具执行成功。</li>
+      <li style="padding-left:34px"><strong>任务成功</strong> —— 任务达到预先定义的验收标准。</li>
+      <li style="padding-left:34px"><strong>用户价值成功</strong> —— 任务不仅完成，还节省了时间、提高了质量或改善了决策。</li>
+    </ul>
+    <p class="rv">例如，AI 生成了一万行代码，并不代表任务成功；<span class="mark">代码通过测试、符合需求、可以维护，才更接近真正的成功。</span></p>
+
+    <!-- 2.6 -->
+    <h3 class="dim rv"><span class="idx">6.</span>情绪、认知负担与长期关系体验<span class="en">EMOTION & LONG-TERM RELATIONSHIP</span></h3>
+    <p class="dim-lede rv">衡量用户在使用 AI 的过程中是否感到轻松、安心、受支持，以及这种体验能否持续。</p>
+    <div class="tw rv"><table>
+      <thead><tr><th>指标</th><th>英文 / 缩写</th><th>定义与计算方式</th></tr></thead>
+      <tbody>
+        <tr><td>总体满意度</td><td class="mono">CSAT</td><td>用户对本次交互或任务体验的评分</td></tr>
+        <tr><td>易用性感知</td><td class="mono">Perceived Ease of Use</td><td>用户认为学习和使用 AI 的难易程度</td></tr>
+        <tr><td>认知负担</td><td class="mono">Cognitive Load</td><td>用户理解、监督和核验 AI 所需的心理努力</td></tr>
+        <tr><td>心智负担</td><td class="mono">Mental Workload</td><td>可用 NASA-TLX 等量表评估的主观工作负荷</td></tr>
+        <tr><td>挫败率</td><td class="mono">Frustration Rate</td><td>用户表现出明显挫败或放弃意图的会话比例</td></tr>
+        <tr><td>情绪改善幅度</td><td class="mono">Emotional Improvement</td><td>交互前后用户自评情绪状态的变化</td></tr>
+        <tr><td>感知支持度</td><td class="mono">Perceived Support</td><td>用户感到 AI 是否提供了有效帮助和支持</td></tr>
+        <tr><td>任务放弃率</td><td class="mono">Abandonment Rate</td><td>用户未完成任务便结束交互的比例</td></tr>
+        <tr><td>持续使用率</td><td class="mono">Retention Rate</td><td>在指定时间窗口内再次使用产品的用户比例</td></tr>
+        <tr><td>主动复用率</td><td class="mono">Repeat Task Usage</td><td>用户再次将同类任务委托给 AI 的比例</td></tr>
+        <tr><td>推荐意愿</td><td class="mono">NPS</td><td>用户推荐产品给他人的意愿评分</td></tr>
+      </tbody>
+    </table></div>
+
+    <p class="rv">对于<strong>陪伴、教育、医疗</strong>等场景，情绪体验很重要；对于 <strong>Codex 等生产力 Agent</strong>，认知负担、返工成本、信任校准和任务价值通常更加关键。这些维度并不是所有产品都要赋予相同权重，而应根据产品任务、风险等级和用户群体调整。</p>
+  </section>
+
+  <!-- ================= 三、Agent 专属指标 ================= -->
+  <section class="sec" id="s3">
+    <div class="sec-head rv">
+      <div class="sec-num">三</div>
+      <div class="sec-head-txt">
+        <div class="sec-chapter">CHAPTER 03 · AGENT-SPECIFIC METRICS</div>
+        <h2 class="sec-title">Agent 体验还需要单独建立的指标</h2>
+      </div>
+    </div>
+    <div class="sec-rule rv"></div>
+
+    <p class="rv">上面六个维度适用于广义 AI 产品。对于真正能够<strong>自主规划、调用工具和执行任务</strong>的 Agent，还建议额外建立四组专门的体验指标。</p>
+
+    <!-- 3.1 -->
+    <h3 class="dim rv"><span class="idx">1.</span>自主性与委托体验<span class="en">AUTONOMY & DELEGATION</span></h3>
+    <p class="dim-lede rv">关注用户敢不敢把任务交给 Agent，以及是否需要持续盯着它。</p>
+    <div class="tw rv"><table>
+      <thead><tr><th>指标</th><th>定义</th></tr></thead>
+      <tbody>
+        <tr><td>委托意愿</td><td>用户愿意将特定类型任务交给 Agent 的比例</td></tr>
+        <tr><td>委托范围</td><td>用户愿意授权的任务类型、操作范围与权限等级</td></tr>
+        <tr><td>监督负担</td><td>用户为了确认 Agent 正常工作所花费的时间和操作次数</td></tr>
+        <tr><td>自主性适配度</td><td>Agent 的自主程度是否符合用户对该任务的控制偏好</td></tr>
+        <tr><td>预期一致率</td><td>用户预期 Agent 会采取的行动与实际行动的一致程度</td></tr>
+        <tr><td>主动建议采纳率</td><td>用户采纳 Agent 主动提出的建议的比例</td></tr>
+        <tr><td>任务接管成本</td><td>用户从 Agent 接管任务并继续执行所需的时间和操作</td></tr>
+        <tr><td>委托后安心度</td><td>任务委托后，用户对进展、风险和最终结果的主观安心程度</td></tr>
+      </tbody>
+    </table></div>
+    <p class="rv">这组指标可以回答一个很重要的问题：<span class="mark">Agent 是真正替用户承担了工作，还是只是把操作转移成了监督 AI 的工作？</span></p>
+
+    <!-- 3.2 -->
+    <h3 class="dim rv"><span class="idx">2.</span>多步骤与长程任务体验<span class="en">MULTI-STEP & LONG-HORIZON</span></h3>
+    <p class="dim-lede rv">单轮问答可以在一次回复中完成；复杂 Agent 则可能执行几十个步骤，跨越多个工具、文件和应用。</p>
+    <div class="tw rv"><table>
+      <thead><tr><th>指标</th><th>定义</th></tr></thead>
+      <tbody>
+        <tr><td>长程任务成功率</td><td>满足全部终态验收条件的长任务比例</td></tr>
+        <tr><td>步骤完成率</td><td>成功完成的必要步骤数 ÷ 必要步骤总数</td></tr>
+        <tr><td>任务偏航率</td><td>执行过程中偏离有效目标或约束的任务比例</td></tr>
+        <tr><td>目标保持率</td><td>长任务中持续遵循原始目标和有效更新目标的程度</td></tr>
+        <tr><td>跨工具连续性</td><td>在不同工具之间保持任务状态、参数和约束的能力</td></tr>
+        <tr><td>依赖处理成功率</td><td>正确处理前置条件、步骤依赖和执行顺序的比例</td></tr>
+        <tr><td>断点恢复成功率</td><td>中断后恢复上下文并继续任务的比例</td></tr>
+        <tr><td>重复执行率</td><td>因状态丢失、重复调用或计划错误而重复执行的比例</td></tr>
+        <tr><td>终态验证覆盖率</td><td>对最终交付物进行必要验证的任务比例</td></tr>
+        <tr><td>长任务可观测性</td><td>用户能否理解任务进展、阻塞原因和剩余工作</td></tr>
+      </tbody>
+    </table></div>
+    <div class="pull rv">
+      <div class="t">注意</div>
+      <p><strong>步骤完成率不是端到端任务成功率的替代指标。</strong>所有步骤都被执行，不代表执行顺序正确、输出质量合格，或者最终目标实现。</p>
+    </div>
+
+    <!-- 3.3 -->
+    <h3 class="dim rv"><span class="idx">3.</span>人机协作与控制体验<span class="en">HUMAN-AI CONTROL</span></h3>
+    <div class="tw rv"><table>
+      <thead><tr><th>指标</th><th>定义</th></tr></thead>
+      <tbody>
+        <tr><td>关键节点确认率</td><td>需要用户确认的关键操作中，正确设置确认机制的比例</td></tr>
+        <tr><td>介入时机有效率</td><td>用户或系统能否在错误造成实际影响前介入</td></tr>
+        <tr><td>修改传播正确率</td><td>用户修改目标后，新约束是否正确传递到后续步骤</td></tr>
+        <tr><td>人机分工适配度</td><td>AI 与用户承担的任务，是否符合双方能力与责任边界</td></tr>
+        <tr><td>审批负担</td><td>用户完成所有必要审批所需的时间和操作数量</td></tr>
+        <tr><td>回滚成功率</td><td>发生错误后，恢复到有效状态的操作比例</td></tr>
+        <tr><td>交接完整率</td><td>Agent 向用户交接时，是否提供必要上下文、进度和后续行动</td></tr>
+        <tr><td>人类监督有效性</td><td>用户是否有足够的信息、时间和权限发现并阻止错误</td></tr>
+      </tbody>
+    </table></div>
+    <p class="rv">这组指标特别适合<strong>浏览器 Agent、桌面操作 Agent、代码 Agent 和企业工作流 Agent</strong>。相关研究对可控性的讨论也强调，用户必须真正具备<span class="mark">查看、纠正、停止和覆盖</span> Agent 行动的能力，而不能只有形式上的审批按钮。</p>
+    <div class="src rv">REF — SPRINGER NATURE LINK</div>
+
+    <!-- 3.4 -->
+    <h3 class="dim rv"><span class="idx">4.</span>失败与恢复体验<span class="en">FAILURE & RECOVERY</span></h3>
+    <p class="dim-lede rv">Agent 不可能永远不犯错。成熟的体验设计不只是降低失败率，还要控制失败的影响和恢复成本。</p>
+    <div class="tw rv"><table>
+      <thead><tr><th>指标</th><th>定义</th></tr></thead>
+      <tbody>
+        <tr><td>失败感知率</td><td>系统能识别的实际失败数 ÷ 实际失败总数</td></tr>
+        <tr><td>失败解释有效率</td><td>用户能够理解失败原因及下一步处理方式的比例</td></tr>
+        <tr><td>自主恢复率</td><td>Agent 无需用户介入便恢复任务的比例</td></tr>
+        <tr><td>用户恢复成功率</td><td>用户介入后成功恢复任务的比例</td></tr>
+        <tr><td>平均恢复时间</td><td>从失败发生到恢复正常所需的平均时间</td></tr>
+        <tr><td>恢复后成功率</td><td>恢复执行后最终完成任务的比例</td></tr>
+        <tr><td>错误重复率</td><td>相同或可避免错误再次发生的比例</td></tr>
+        <tr><td>失败影响范围</td><td>失败造成的文件损坏、错误操作、时间损失等实际影响</td></tr>
+        <tr><td>安全停止成功率</td><td>达到停止条件后，Agent 能正确停止危险操作的比例</td></tr>
+      </tbody>
+    </table></div>
+    <p class="rv">对复杂 Agent 来说，<strong>失败后的恢复能力往往比单纯的首次成功率</strong>更能体现系统是否成熟。</p>
+  </section>
+
+  <!-- ================= 四、四级指标结构 ================= -->
+  <section class="sec" id="s4">
+    <div class="sec-head rv">
+      <div class="sec-num">四</div>
+      <div class="sec-head-txt">
+        <div class="sec-chapter">CHAPTER 04 · FOUR-LEVEL HIERARCHY</div>
+        <h2 class="sec-title">如何将这些指标变成可执行的指标体系？</h2>
+      </div>
+    </div>
+    <div class="sec-rule rv"></div>
+
+    <p class="rv">不建议把所有指标简单相加成一个「AI 体验总分」。不同指标的量纲不同，而且某些底线不能通过其他高分抵消 —— 例如<strong>严重安全违规不能被高满意度抵消</strong>。更好的方法是建立四级指标结构。</p>
+
+    <div class="lvl-stack rv">
+      <div class="lvl lvl1">
+        <div class="key">L1</div>
+        <div class="body">
+          <h5>北极星指标</h5>
+          <div class="ms">用户目标成功率 · 净价值实现率</div>
+          <div class="d">衡量产品是否真正为用户完成工作、创造价值。</div>
+        </div>
+      </div>
+      <div class="lvl lvl2">
+        <div class="key">L2</div>
+        <div class="body">
+          <h5>体验结果指标</h5>
+          <div class="ms">结果可用率 · 用户满意度 · 信任校准度 · 认知负担</div>
+          <div class="d">衡量用户得到的结果和实际感受。</div>
+        </div>
+      </div>
+      <div class="lvl lvl3">
+        <div class="key">L3</div>
+        <div class="body">
+          <h5>交互与执行过程指标</h5>
+          <div class="ms">澄清轮数 · 纠错成功率 · 介入率 · 恢复率 · 进度可见性</div>
+          <div class="d">定位体验问题发生在什么环节。</div>
+        </div>
+      </div>
+      <div class="lvl lvl4">
+        <div class="key">L4</div>
+        <div class="body">
+          <h5>技术驱动指标</h5>
+          <div class="ms">模型质量 · 工具调用成功率 · 延迟 · 上下文保持 · 成本 · 系统稳定性</div>
+          <div class="d">定位体验问题背后的技术原因。</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="rv">这四层之间要建立<strong>因果假设</strong>，而不只是并排展示。例如：</p>
+
+    <div class="chain-wrap rv">
+      <div class="lbl">CAUSAL CHAIN · 因果链路</div>
+      <div class="chain">
+        <span class="c">工具调用成功率下降</span><span class="a">→</span>
+        <span class="c">执行失败率上升</span><span class="a">→</span>
+        <span class="c">用户接管增加</span><span class="a">→</span>
+        <span class="c">监督负担上升</span><span class="a">→</span>
+        <span class="c">满意度下降</span>
+      </div>
+    </div>
+
+    <p class="rv">这条链路可以指导<strong>产品、设计和工程团队</strong>一起定位问题。</p>
+  </section>
+
+  <!-- ================= 五、优先监测 ================= -->
+  <section class="sec" id="s5">
+    <div class="sec-head rv">
+      <div class="sec-num">五</div>
+      <div class="sec-head-txt">
+        <div class="sec-chapter">CHAPTER 05 · MVP METRICS PANEL</div>
+        <h2 class="sec-title">最值得优先监测的核心指标</h2>
+      </div>
+    </div>
+    <div class="sec-rule rv"></div>
+
+    <p class="rv">如果你现在正在建设一个 AI 产品，不建议一开始就实现几十个指标。可以先选择 <strong>12 个指标</strong>组成 MVP 指标面板。</p>
+
+    <div class="tw rv"><table>
+      <thead><tr><th>优先级</th><th>核心指标</th><th>主要回答的问题</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge p0">P0</span></td><td>端到端任务成功率</td><td>用户目标有没有实现？</td></tr>
+        <tr><td><span class="badge p0">P0</span></td><td>结果可用率</td><td>最终结果能否直接使用？</td></tr>
+        <tr><td><span class="badge p0">P0</span></td><td>目标对齐率</td><td>AI 是否做对了事情？</td></tr>
+        <tr><td><span class="badge p0">P0</span></td><td>安全违规率</td><td>是否存在不可接受的风险？</td></tr>
+        <tr><td><span class="badge p0">P0</span></td><td>用户纠错成功率</td><td>用户能否纠正 AI？</td></tr>
+        <tr><td><span class="badge p0">P0</span></td><td>异常恢复率</td><td>失败后能否恢复？</td></tr>
+        <tr><td><span class="badge p1">P1</span></td><td>任务完成耗时</td><td>AI 是否节省了时间？</td></tr>
+        <tr><td><span class="badge p1">P1</span></td><td>用户监督负担</td><td>用户是否仍然需要大量盯着 AI？</td></tr>
+        <tr><td><span class="badge p1">P1</span></td><td>信任校准度</td><td>用户是否知道何时可以信任 AI？</td></tr>
+        <tr><td><span class="badge p1">P1</span></td><td>认知负担</td><td>使用 AI 是否增加了额外的脑力工作？</td></tr>
+        <tr><td><span class="badge p1">P1</span></td><td>首次交付通过率</td><td>是否减少了返工？</td></tr>
+        <tr><td><span class="badge p1">P1</span></td><td>持续使用率</td><td>用户是否愿意再次使用？</td></tr>
+      </tbody>
+    </table></div>
+
+    <p class="rv" style="font-size:13.5px;color:var(--ink-3)">※ P0、P1 是实施建议，不是通用行业标准。实际优先级应根据业务风险和任务类型调整。</p>
+
+    <h3 class="dim rv" style="margin-top:60px"><span class="idx">◇</span>不同 Agent 应该采用不同权重<span class="en">WEIGHTS BY AGENT TYPE</span></h3>
+
+    <div class="wg rv">
+      <div class="w">
+        <div class="cat">CODEX AGENT</div>
+        <h5>Codex / 编程 Agent</h5>
+        <p>任务成功、代码正确性、测试通过、文件操作安全、返工成本、长程执行与恢复能力。</p>
+      </div>
+      <div class="w">
+        <div class="cat">DEEP RESEARCH</div>
+        <h5>Deep Research / 研究 Agent</h5>
+        <p>证据质量、来源可追溯性、覆盖完整性、事实正确性、不确定性表达、研究耗时。</p>
+      </div>
+      <div class="w">
+        <div class="cat">MEDICAL AGENT</div>
+        <h5>医疗 Agent</h5>
+        <p>临床安全、关键风险漏检、证据一致性、医生复核负担、工作流适配。</p>
+        <div class="warn">※ 满意度不能代替安全指标。</div>
+      </div>
+      <div class="w">
+        <div class="cat">COMPANION AGENT</div>
+        <h5>儿童成长 / 陪伴 Agent</h5>
+        <p>情绪支持效果、适龄性、互动参与度、长期成长目标、儿童安全、家长信任与控制能力。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 六、测量方法 ================= -->
+  <section class="sec" id="s6">
+    <div class="sec-head rv">
+      <div class="sec-num">六</div>
+      <div class="sec-head-txt">
+        <div class="sec-chapter">CHAPTER 06 · MEASUREMENT</div>
+        <h2 class="sec-title">如何真正测量这些指标？</h2>
+      </div>
+    </div>
+    <div class="sec-rule rv"></div>
+
+    <p class="rv">建议将<strong>四类证据</strong>结合起来，而不是仅依赖用户问卷。</p>
+
+    <div class="ev rv">
+      <div class="e"><div class="no">EVIDENCE 01</div><h5>行为数据</h5><p>任务完成、重试、纠错、中断、接管、放弃、重复使用。</p></div>
+      <div class="e"><div class="no">EVIDENCE 02</div><h5>客观评测</h5><p>标准任务集、正确性测试、约束检查、工具执行结果、专家审核。</p></div>
+      <div class="e"><div class="no">EVIDENCE 03</div><h5>主观研究</h5><p>满意度、信任、可控性、认知负担、访谈与可用性测试。</p></div>
+      <div class="e"><div class="no">EVIDENCE 04</div><h5>真实业务结果</h5><p>节省的时间、交付质量、返工成本、风险事件和长期价值。</p></div>
+    </div>
+
+    <p class="rv">核心公式也要统一口径。例如：</p>
+
+    <div class="formulas rv">
+      <div class="formula">
+        <span class="f-name">任务成功率</span><span class="f-eq">=</span>
+        <span class="f-frac"><span class="f-num">满足预设验收标准的任务数</span><span class="f-den">纳入评测的任务总数</span></span>
+        <span class="f-tail">× 100%</span>
+      </div>
+      <div class="formula">
+        <span class="f-name">纠错成功率</span><span class="f-eq">=</span>
+        <span class="f-frac"><span class="f-num">纠错后达到预期的次数</span><span class="f-den">有效纠错尝试总次数</span></span>
+        <span class="f-tail">× 100%</span>
+      </div>
+      <div class="formula">
+        <span class="f-name">时间节省率</span><span class="f-eq">=</span>
+        <span class="f-frac"><span class="f-num">基线耗时 − AI 辅助耗时</span><span class="f-den">基线耗时</span></span>
+        <span class="f-tail">× 100%</span>
+      </div>
+    </div>
+
+    <p class="rv">时间节省率要把<span class="mark">核验、返工和用户监督时间纳入 AI 辅助耗时</span>，否则会高估 AI 的价值。</p>
+    <p class="rv">还要为每个指标明确<strong>分母、任务难度、观察窗口、用户群体、失败判定标准和数据来源</strong>。不同难度的任务不能不加区分地直接比较。</p>
+  </section>
+
+  <!-- ================= 七、产品判断 ================= -->
+  <section class="sec" id="s7">
+    <div class="sec-head rv">
+      <div class="sec-num">七</div>
+      <div class="sec-head-txt">
+        <div class="sec-chapter">CHAPTER 07 · PRODUCT JUDGMENT</div>
+        <h2 class="sec-title">最重要的产品判断</h2>
+      </div>
+    </div>
+    <div class="sec-rule rv"></div>
+
+    <p class="rv">AI 体验指标体系真正的价值，不是建立一张更大的指标表，而是帮助你回答<strong>三个层次的问题</strong>：</p>
+
+    <div class="three rv">
+      <div class="t3">
+        <div class="no">01</div>
+        <div><h5>用户体验好不好？</h5><p>看任务结果、认知负担、信任和满意度。</p></div>
+      </div>
+      <div class="t3">
+        <div class="no">02</div>
+        <div><h5>为什么好或不好？</h5><p>看意图理解、交互、执行、可控性与恢复过程。</p></div>
+      </div>
+      <div class="t3">
+        <div class="no">03</div>
+        <div><h5>应该改哪里？</h5><p>将体验问题关联到模型、工具、记忆、Agent 规划、权限设计和界面反馈。</p></div>
+      </div>
+    </div>
+
+    <p class="rv">学术研究也在逐步将<strong>对话能力、任务有效性、社会情感体验、透明度和公平性</strong>放入同一个人机交互评价框架，而不是只评估模型输出质量。</p>
+    <div class="src rv">REF — MDPI</div>
+
+    <div class="coda rv">
+      <div class="lbl">CODA · 结语与建议</div>
+      <p>如果你的目标是成为 <strong>AI 产品经理或 Agent 产品设计专家</strong>，可以进一步把这套体系深化为一份完整的<span class="dic">《AI / Agent 体验指标字典》</span>—— 为每个指标补齐中英文名称、定义、计算公式、数据埋点、评估方法、适用场景、反指标、指标间因果关系，以及 Codex 等复杂 Agent 的具体案例。</p>
+      <p style="margin-top:1.2em">这样才可以直接用于<strong>产品设计、数据分析和体验评审</strong>。</p>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <span>AI 体验设计系统研究 · AI EXPERIENCE FRAMEWORK</span>
+  <span>用户目标成功率 · NORTH STAR ★</span>
+</footer>
+
+<button class="top" id="toTop" aria-label="返回顶部">↑</button>
+
+<script>
+// 阅读进度
+const progress=document.getElementById('progress');
+const toTop=document.getElementById('toTop');
+addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  const p=h.scrollTop/(h.scrollHeight-h.clientHeight);
+  progress.style.width=(p*100).toFixed(2)+'%';
+  toTop.classList.toggle('show',h.scrollTop>600);
+},{passive:true});
+toTop.addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
+
+// 入场动画
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.08,rootMargin:'0px 0px -4% 0px'});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+// 目录高亮
+const links=[...document.querySelectorAll('.toc a')];
+const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const spy=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.classList.remove('active'));
+      const i=secs.indexOf(e.target);
+      if(i>-1)links[i].classList.add('active');
+    }
+  });
+},{rootMargin:'-25% 0px -65% 0px'});
+secs.forEach(s=>s&&spy.observe(s));
+</script>
+<a href="AI体验指标体系研究汇总.html" title="返回研究汇总" aria-label="返回研究汇总" style="position:fixed;right:34px;bottom:88px;width:46px;height:46px;border-radius:50%;background:#2E2A72;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Noto Serif SC',serif;font-weight:600;font-size:15px;text-decoration:none;z-index:91;box-shadow:0 6px 20px -6px rgba(27,23,71,.45)">汇</a>
+</body>
+</html>

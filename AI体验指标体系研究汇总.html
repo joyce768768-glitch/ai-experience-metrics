@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 体验指标体系研究 · 汇总导航</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F8F7F3;
+  --paper-2:#FFFFFF;
+  --ink:#16151C;
+  --ink-2:#3B3A44;
+  --ink-3:#8B8A93;
+  --indigo:#4338CA;
+  --indigo-deep:#2E2A72;
+  --indigo-ink:#1B1747;
+  --emerald:#0E7B54;
+  --emerald-deep:#14332A;
+  --hair:#E5E3DA;
+  --hair-2:#D8D6CC;
+  --serif:'Noto Serif SC',serif;
+  --sans:'Noto Sans SC',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--indigo);color:#fff}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:99;opacity:.5;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E")}
+
+/* HERO */
+.hero{position:relative;overflow:hidden;background:linear-gradient(150deg,var(--indigo-ink) 0%,var(--indigo-deep) 60%,#3A3290 100%);color:#fff}
+.hero::before{content:"研";position:absolute;right:-40px;top:-110px;font-family:var(--serif);font-weight:900;font-size:520px;line-height:1;color:rgba(255,255,255,.045)}
+.hero::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:64px 64px;-webkit-mask-image:radial-gradient(ellipse 60% 80% at 80% 25%,#000,transparent 72%);mask-image:radial-gradient(ellipse 60% 80% at 80% 25%,#000,transparent 72%)}
+.hero-in{max-width:1180px;margin:0 auto;padding:130px 48px 96px;position:relative;z-index:2}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.34em;color:#A5A8E8;display:flex;align-items:center;gap:14px;margin-bottom:40px}
+.kicker::after{content:"";flex:0 0 56px;height:1px;background:#A5A8E8}
+.hero h1{font-family:var(--serif);font-weight:900;font-size:clamp(44px,6.4vw,84px);line-height:1.16;letter-spacing:.03em}
+.hero h1 em{font-style:normal;color:#B9BCF2}
+.hero .sub{margin-top:32px;max-width:660px}
+.hero .sub p{font-size:16px;line-height:2.1;color:#C9CBEF}
+.hero .sub strong{color:#fff;font-weight:600}
+.hero-chips{margin-top:36px;display:flex;gap:10px;flex-wrap:wrap}
+.hero-chips span{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:#C9CBEF;border:1px solid rgba(255,255,255,.22);padding:6px 14px}
+
+/* 主区域 */
+.shell{max-width:1180px;margin:0 auto;padding:96px 48px 120px}
+.sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:10px}
+.sec-head .no{font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:var(--indigo)}
+.sec-head h2{font-family:var(--serif);font-weight:700;font-size:clamp(24px,3vw,32px);letter-spacing:.05em}
+.sec-head .en{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--ink-3)}
+.rule{height:1px;background:var(--hair-2);margin:22px 0 44px;position:relative}
+.rule::before{content:"";position:absolute;left:0;top:-1px;width:72px;height:3px;background:var(--indigo)}
+.lede{font-size:15.5px;line-height:2.05;color:var(--ink-2);max-width:760px;margin-bottom:40px}
+.lede strong{font-weight:600;color:var(--ink)}
+
+/* 文档卡 */
+.docs{display:flex;flex-direction:column;gap:22px}
+.doc{display:grid;grid-template-columns:150px minmax(0,1fr) 210px;text-decoration:none;border:1px solid var(--hair-2);background:var(--paper-2);overflow:hidden;transition:transform .35s cubic-bezier(.22,.61,.36,1),box-shadow .35s}
+.doc:hover{transform:translateY(-4px);box-shadow:0 18px 44px -18px rgba(27,23,71,.25)}
+.doc .side{display:flex;flex-direction:column;justify-content:space-between;padding:30px 26px;border-right:1px solid var(--hair)}
+.doc .side .no{font-family:var(--serif);font-weight:200;font-size:56px;line-height:1}
+.doc .side .vol{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em}
+.doc.d0 .side{background:#16151C;color:#B9BCF2}
+.doc.d0 .side .no{color:transparent;-webkit-text-stroke:1px rgba(185,188,242,.6)}
+.doc.d0 .view{background:#ECEAF2;color:#16151C}
+.doc.d0 .go .open{color:#16151C}
+.doc.d1 .side{background:var(--indigo-fog);color:var(--indigo)}
+.doc.d2 .side{background:var(--indigo-ink);color:#A5A8E8}
+.doc.d3 .side{background:var(--emerald-deep);color:#7FB89A}
+.doc.d4 .side{background:#2E2A72;color:#A5A8E8}
+.doc.d1 .side .no{color:rgba(67,56,202,.35);-webkit-text-stroke:1px rgba(67,56,202,.55)}
+.doc.d2 .side .no{color:transparent;-webkit-text-stroke:1px rgba(165,168,232,.6)}
+.doc.d3 .side .no{color:transparent;-webkit-text-stroke:1px rgba(127,184,154,.6)}
+.doc.d4 .side .no{color:transparent;-webkit-text-stroke:1px rgba(165,168,232,.6)}
+.doc.d5 .side{background:#4A241A;color:#E8B39E}
+.doc.d5 .side .no{color:transparent;-webkit-text-stroke:1px rgba(232,179,158,.6)}
+.doc.d6 .side{background:#5C1F3A;color:#E5A9BE}
+.doc.d6 .side .no{color:transparent;-webkit-text-stroke:1px rgba(229,169,190,.6)}
+.doc.d7 .side{background:#3730A3;color:#C7D2FE}
+.doc.d7 .side .no{color:transparent;-webkit-text-stroke:1px rgba(199,210,254,.6)}
+.doc.d8 .side{background:#1E3A8A;color:#B9C6F2}
+.doc.d8 .side .no{color:transparent;-webkit-text-stroke:1px rgba(185,198,242,.6)}
+.doc.d9 .side{background:#0F766E;color:#99DCD2}
+.doc.d9 .side .no{color:transparent;-webkit-text-stroke:1px rgba(153,220,210,.6)}
+.doc.d10 .side{background:#7A1F2B;color:#E8A9B0}
+.doc.d10 .side .no{color:transparent;-webkit-text-stroke:1px rgba(232,169,176,.6)}
+.doc.d11 .side{background:#164E63;color:#A5D8E5}
+.doc.d11 .side .no{color:transparent;-webkit-text-stroke:1px rgba(165,216,229,.6)}
+.doc.d12 .side{background:#6B4A12;color:#E8CE9E}
+.doc.d12 .side .no{color:transparent;-webkit-text-stroke:1px rgba(232,206,158,.6)}
+.doc.d13 .side{background:#52255C;color:#D9B8E0}
+.doc.d13 .side .no{color:transparent;-webkit-text-stroke:1px rgba(217,184,224,.6)}
+.doc.d14 .side{background:#1B1747;color:#B9BCF2}
+.doc.d14 .side .no{color:transparent;-webkit-text-stroke:1px rgba(185,188,242,.6)}
+.doc.d15 .side{background:#4338CA;color:#C3C6F4}
+.doc.d15 .side .no{color:transparent;-webkit-text-stroke:1px rgba(195,198,244,.6)}
+.doc .body{padding:30px 34px}
+.doc .body h3{font-family:var(--serif);font-weight:700;font-size:22px;letter-spacing:.04em;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.doc .body h3 .en{font-family:var(--mono);font-weight:400;font-size:10.5px;letter-spacing:.14em;color:var(--ink-3)}
+.doc .body .view{display:inline-block;margin-top:12px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;padding:4px 11px}
+.doc.d1 .view{background:#EBECF7;color:var(--indigo-deep)}
+.doc.d2 .view{background:var(--indigo-deep);color:#B9BCF2}
+.doc.d3 .view{background:var(--emerald-deep);color:#7FB89A}
+.doc.d4 .view{background:#EDECF8;color:var(--indigo-deep)}
+.doc.d5 .view{background:#F7EAE4;color:#7A3A24}
+.doc.d6 .view{background:#F8E9EF;color:#8A2450}
+.doc.d7 .view{background:#EEF0FB;color:#312E81}
+.doc.d8 .view{background:#E7ECF8;color:#152C6B}
+.doc.d9 .view{background:#E0F1EE;color:#0A5850}
+.doc.d10 .view{background:#F7E7E4;color:#7A1F2B}
+.doc.d11 .view{background:#E1F0F4;color:#0E3846}
+.doc.d12 .view{background:#F6EDDA;color:#6B4A12}
+.doc.d13 .view{background:#F3EAF6;color:#3E1B47}
+.doc.d14 .view{background:#E4E6F8;color:#1B1747}
+.doc.d15 .view{background:#EBECF7;color:#4338CA}
+.doc .body p{margin-top:14px;font-size:13.5px;line-height:1.95;color:var(--ink-2)}
+.doc .body p strong{color:var(--ink);font-weight:600}
+.doc .body .tags{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.doc .body .tags span{font-size:11px;color:var(--ink-3);border:1px solid var(--hair);padding:3px 10px}
+.doc .go{border-left:1px solid var(--hair);display:flex;flex-direction:column;justify-content:flex-end;padding:28px;gap:8px}
+.doc .go .file{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);letter-spacing:.04em;word-break:break-all;line-height:1.7}
+.doc .go .open{font-family:var(--mono);font-size:12px;letter-spacing:.14em;display:inline-flex;align-items:center;gap:8px}
+.doc.d1 .go .open{color:var(--indigo)}
+.doc.d2 .go .open{color:var(--indigo-deep)}
+.doc.d3 .go .open{color:var(--emerald)}
+.doc.d4 .go .open{color:var(--indigo-deep)}
+.doc.d5 .go .open{color:#B45A38}
+.doc.d6 .go .open{color:#A83A5C}
+.doc.d7 .go .open{color:#4338CA}
+.doc.d8 .go .open{color:#1E3A8A}
+.doc.d9 .go .open{color:#0F766E}
+.doc.d10 .go .open{color:#B23A2E}
+.doc.d11 .go .open{color:#164E63}
+.doc.d12 .go .open{color:#8A651F}
+.doc.d13 .go .open{color:#52255C}
+.doc.d14 .go .open{color:#1B1747}
+.doc.d15 .go .open{color:#4338CA}
+.doc.d16 .side{background:#3E1B47;color:#E5C9F0}
+.doc.d16 .side .no{color:transparent;-webkit-text-stroke:1px rgba(229,201,240,.6)}
+.doc.d16 .view{background:#F3EAF6;color:#3E1B47}
+.doc.d16 .go .open{color:#3E1B47}
+.doc.d17 .side{background:#1F3A5F;color:#BFD3E8}
+.doc.d17 .side .no{color:transparent;-webkit-text-stroke:1px rgba(191,211,232,.6)}
+.doc.d17 .view{background:#E7EDF5;color:#1F3A5F}
+.doc.d17 .go .open{color:#1F3A5F}
+.doc:hover .go .open{gap:14px}
+.doc .go .open{transition:gap .3s}
+
+/* 对照表 */
+.vs{margin:96px 0 0}
+.vs table{width:100%;border-collapse:collapse;border-top:2px solid var(--ink);min-width:640px}
+.vs th{font-family:var(--mono);font-weight:500;font-size:10px;letter-spacing:.2em;color:var(--indigo);text-align:left;padding:13px 14px 11px;border-bottom:1px solid var(--hair-2)}
+.vs td{font-size:13px;line-height:1.8;padding:13px 14px;border-bottom:1px solid var(--hair);vertical-align:top;color:var(--ink-2)}
+.vs td:first-child{font-weight:500;color:var(--ink);white-space:nowrap}
+.vs tbody tr{transition:background .25s}
+.vs tbody tr:hover{background:#F3F4FB}
+.vs .c1{border-left:3px solid var(--indigo)}
+.vs .c2{border-left:3px solid var(--indigo-ink)}
+.vs .c3{border-left:3px solid var(--emerald)}
+.vs .c4{border-left:3px solid #6D64D9}
+
+/* 使用指引 */
+.guide{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--hair);border:1px solid var(--hair);margin-top:44px}
+.guide .g{background:var(--paper-2);padding:26px 24px 30px}
+.guide .g .no{font-family:var(--serif);font-weight:200;font-size:26px;color:var(--indigo)}
+.guide .g h5{font-family:var(--serif);font-weight:700;font-size:15.5px;margin:10px 0 8px}
+.guide .g p{font-size:12.5px;line-height:1.9;color:var(--ink-2)}
+
+footer{border-top:1px solid var(--hair-2);max-width:1180px;margin:0 auto;padding:40px 48px 60px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--ink-3);flex-wrap:wrap;gap:10px}
+
+.rv{opacity:0;transform:translateY(22px);transition:opacity .8s cubic-bezier(.22,.61,.36,1),transform .8s cubic-bezier(.22,.61,.36,1)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}}
+
+@media (max-width:1000px){
+  .doc{grid-template-columns:110px minmax(0,1fr)}
+  .doc .go{display:none}
+}
+@media (max-width:760px){
+  .hero-in{padding:90px 26px 70px}
+  .shell{padding:70px 26px 90px}
+  .doc{grid-template-columns:1fr}
+  .doc .side{flex-direction:row;align-items:baseline;border-right:none;border-bottom:1px solid var(--hair);padding:18px 24px;gap:14px}
+  .doc .side .no{font-size:36px}
+  .guide{grid-template-columns:1fr}
+  footer{padding:32px 26px}
+}
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="hero">
+  <div class="hero-in">
+    <div class="kicker rv">RESEARCH HUB · AI EXPERIENCE METRICS</div>
+    <h1 class="rv" style="transition-delay:.08s">AI 体验指标体系<br><em>研究汇总</em></h1>
+    <div class="sub rv" style="transition-delay:.16s">
+      <p>同一命题的三次独立建构，与让它落地的工具书系列——<strong>能力视角、关系视角、交易视角</strong>分别回答「体验由什么构成」，拆解字典六卷<strong>按源框架六维</strong>回答「每条指标如何拆」，闭环手册回答「循环如何转」。按研究目的选择入口。</p>
+    </div>
+    <div class="hero-chips rv" style="transition-delay:.24s">
+      <span>18 DOCUMENTS</span><span>3 PERSPECTIVES</span><span>3 FIELD TOOLS</span><span>同源 · 不断生长</span>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+
+  <div class="sec-head rv"><span class="no">01</span><h2>文档导航</h2><span class="en">DOCUMENTS</span></div>
+  <div class="rule rv"></div>
+  <p class="lede rv">十八份文档均为独立 HTML，可离线打开。点击卡片直达。</p>
+
+  <div class="docs">
+
+    <a class="doc d0 rv" href="AI失败分类学.html">
+      <div class="side"><span class="no">00</span><span class="vol">VOL.00 · PROLOGUE</span></div>
+      <div class="body">
+        <h3>AI 失败分类学 v0<span class="en">A TAXONOMY OF FAILURE</span></h3>
+        <span class="view">第 0 号文档 · 失败视角</span>
+        <p>写在六维体系之前的<strong>失败模式目录</strong>：从 71 张指标卡的反指标行反推出<strong>六群 23 条失败模式</strong>，每条含定义、AI 第一人称自述、检测信号、责任归属、对接指标卡与不可原谅度分级。体系先回答「会怎么坏」，再回答「做得好不好」。</p>
+        <div class="tags"><span>6 失败群</span><span>23 条模式</span><span>红线 6 条</span><span>归责四象限</span></div>
+      </div>
+      <div class="go"><span class="file">AI失败分类学.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d1 rv" href="AI体验指标体系.html">
+      <div class="side"><span class="no">01</span><span class="vol">VOL.01 · FOUNDATION</span></div>
+      <div class="body">
+        <h3>AI 体验 / Agent 体验指标体系<span class="en">SIX-DIMENSION FRAMEWORK</span></h3>
+        <span class="view">能力视角 · 指标分类学</span>
+        <p>面向大众体验设计师的<strong>完备指标词典</strong>：北极星 + 六大体验维度 + Agent 专属四组指标 + L1–L4 四级结构 + 12 项 MVP 面板。最适合作为<strong>评审清单与体检表</strong>使用。</p>
+        <div class="tags"><span>60+ 指标</span><span>六大维度</span><span>四级结构</span><span>纸感编辑部风格</span></div>
+      </div>
+      <div class="go"><span class="file">AI体验指标体系.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d8 rv" href="AI体验指标拆解字典_卷一_目标与理解.html">
+      <div class="side"><span class="no">08</span><span class="vol">VOL.08 · UNDERSTANDING</span></div>
+      <div class="body">
+        <h3>拆解字典 · 卷一 目标与理解<span class="en">FULL ×3 · STD ×5</span></h3>
+        <span class="view">字典分册 · 六维之一</span>
+        <p>六维重排首卷，忠于源框架「目标与理解体验」整卷重建。<strong>目标对齐率、个性化适配率、上下文保持率</strong>三张全卡构成理解金字塔，意图识别五卡对应理解的五个动作——听懂、记得、修好、问清、守诺（含红线）。</p>
+        <div class="tags"><span>8 张卡</span><span>理解金字塔</span><span>五个动作</span><span>宝蓝纸感</span></div>
+      </div>
+      <div class="go"><span class="file">AI体验指标拆解字典_卷一_目标与理解.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d9 rv" href="AI体验指标拆解字典_卷二_交互与协作.html">
+      <div class="side"><span class="no">09</span><span class="vol">VOL.09 · INTERACTION</span></div>
+      <div class="body">
+        <h3>拆解字典 · 卷二 交互与协作<span class="en">FULL ×4 · STD ×5 · LITE ×4</span></h3>
+        <span class="view">字典分册 · 六维之二</span>
+        <p>用户能否低成本地表达、调整、纠正 AI。<strong>用户纠错成功率、任务完成耗时、响应延迟、澄清负担</strong>四张全卡 + 协作五把手 + 四个瞬间。必要确认是协作的一部分——减少的是无效交互，不是所有交互。</p>
+        <div class="tags"><span>13 张卡</span><span>纠错可控</span><span>人机合并算账</span><span>青松纸感</span></div>
+      </div>
+      <div class="go"><span class="file">AI体验指标拆解字典_卷二_交互与协作.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d10 rv" href="AI体验指标拆解字典_卷三_信任与安全.html">
+      <div class="side"><span class="no">10</span><span class="vol">VOL.10 · TRUST &amp; SAFETY</span></div>
+      <div class="body">
+        <h3>拆解字典 · 卷三 信任与安全<span class="en">FULL ×6 · STD ×5 · LITE ×1</span></h3>
+        <span class="view">字典分册 · 六维之三</span>
+        <p><strong>安全违规率、信任校准度</strong>坐镇，<strong>过度信任率、隐私感知与控制、安全停止成功率</strong>三卡带红线域。信任要校准而非最大——可解释、可预测、可逆转是三根支柱，红线卡走 S1 通道一票否决。</p>
+        <div class="tags"><span>12 张卡</span><span>红线域 ×3</span><span>双向校准</span><span>绛红纸感</span></div>
+      </div>
+      <div class="go"><span class="file">AI体验指标拆解字典_卷三_信任与安全.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d11 rv" href="AI体验指标拆解字典_卷四_Agent执行.html">
+      <div class="side"><span class="no">11</span><span class="vol">VOL.11 · EXECUTION</span></div>
+      <div class="body">
+        <h3>拆解字典 · 卷四 Agent 执行<span class="en">FULL ×6 · STD ×6 · LITE ×6</span></h3>
+        <span class="view">字典分册 · 六维之四 · 体量最大</span>
+        <p>Agent 与聊天机器人的分界线。<strong>端到端成功率、异常恢复率、监督负担、工具调用、长程任务</strong>五面 + 重复执行红线；执行链路六卡（断点 → 接力 → 偏航 → 验证 → 委托 → 接管）+ 委托三层次。自主完成率高 ≠ 体验好。</p>
+        <div class="tags"><span>18 张卡</span><span>执行全链路</span><span>红线域</span><span>深青纸感</span></div>
+      </div>
+      <div class="go"><span class="file">AI体验指标拆解字典_卷四_Agent执行.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d12 rv" href="AI体验指标拆解字典_卷五_结果与价值.html">
+      <div class="side"><span class="no">12</span><span class="vol">VOL.12 · OUTCOME &amp; VALUE</span></div>
+      <div class="body">
+        <h3>拆解字典 · 卷五 结果与价值<span class="en">FULL ×5 · STD ×3 · LITE ×1</span></h3>
+        <span class="view">字典分册 · 六维之五</span>
+        <p>整卷拆解完毕，9 卡排成一条<strong>结算链</strong>：结果正确率验质量、结果可用率防假象、通过率与返工率算成本、净价值实现率做最终结算——任务全部成功但净值为负，是最隐蔽的价值陷阱。三种成功要分清——技术成功 ≠ 任务成功 ≠ 用户价值成功。</p>
+        <div class="tags"><span>9 张卡</span><span>结算链</span><span>净价值结算</span><span>青铜纸感</span></div>
+      </div>
+      <div class="go"><span class="file">AI体验指标拆解字典_卷五_结果与价值.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d13 rv" href="AI体验指标拆解字典_卷六_情绪与关系.html">
+      <div class="side"><span class="no">13</span><span class="vol">VOL.13 · RELATION</span></div>
+      <div class="body">
+        <h3>拆解字典 · 卷六 情绪与关系<span class="en">FULL ×7 · STD ×3 · LITE ×1</span></h3>
+        <span class="view">字典分册 · 六维之六 · 收官卷</span>
+        <p>七张全卡排成因果链：<strong>认知负担 → 放弃 → 挫败 → 满意度 → 复用 → NPS</strong>，持续使用率收口。行为先于评分——滞后指标只能确认不能定位，必须向行为倒查归因。至此六卷收齐。</p>
+        <div class="tags"><span>11 张卡</span><span>因果链</span><span>滞后指标纪律</span><span>梅紫纸感</span></div>
+      </div>
+      <div class="go"><span class="file">AI体验指标拆解字典_卷六_情绪与关系.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d2 rv" href="AI体验指标体系_信任汇率框架.html">
+      <div class="side"><span class="no">02</span><span class="vol">VOL.02 · ALTERNATIVE</span></div>
+      <div class="body">
+        <h3>信任汇率框架<span class="en">TRUST EXCHANGE RATE · TRX</span></h3>
+        <span class="view">关系视角 · 决策心理学</span>
+        <p>AI 体验是一场<strong>自主权 ⇄ 价值的持续交易</strong>。北极星从「任务成功率」换成「委托留存率」，组织逻辑变为三道门槛漏斗 + 复利曲线，红线一票否决并冻结授权。适合做<strong>增长诊断与授权策略设计</strong>。</p>
+        <div class="tags"><span>委托留存率</span><span>三道门槛</span><span>方差优先</span><span>深蓝瑞士网格风格</span></div>
+      </div>
+      <div class="go"><span class="file">AI体验指标体系_信任汇率框架.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d3 rv" href="AI体验指标体系_体验账本.html">
+      <div class="side"><span class="no">03</span><span class="vol">VOL.03 · LEDGER</span></div>
+      <div class="body">
+        <h3>体验账本<span class="en">EXPERIENCE LEDGER</span></h3>
+        <span class="view">交易视角 · 借贷记账</span>
+        <p>每一次交互都是一笔借贷：贷方是用户获得的价值，借方是付出的成本。四本账（时间/认知/风险/关系）独立算净值，<strong>体验净值率 NEV &gt; 1 才是正向体验</strong>。八个反指标专防「账本造假」。</p>
+        <div class="tags"><span>体验净值率</span><span>四本账</span><span>八个反指标</span><span>深绿会计美学</span></div>
+      </div>
+      <div class="go"><span class="file">AI体验指标体系_体验账本.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d4 rv" href="AI体验指标拆解字典.html">
+      <div class="side"><span class="no">04</span><span class="vol">VOL.04 · DICTIONARY</span></div>
+      <div class="body">
+        <h3>AI/Agent 体验指标拆解字典<span class="en">7-DIMENSION DECOMPOSITION</span></h3>
+        <span class="view">落地工具 · 自进化循环</span>
+        <p>VOL.01 的姊妹卷。对 12 个核心指标做<strong>七维拆解</strong>：目的 / 公式 / 评估标准 / 数据来源 / 分层 / 触发机制 / 改进闭环，并给出「测量→触发→诊断→改进→验证→固化」的六环自进化循环与组织四节拍。</p>
+        <div class="tags"><span>七维拆解卡 ×12</span><span>阈值分级</span><span>触发规则</span><span>纸感编辑部风格</span></div>
+      </div>
+      <div class="go"><span class="file">AI体验指标拆解字典.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d5 rv" href="AI体验指标闭环手册.html">
+      <div class="side"><span class="no">05</span><span class="vol">VOL.05 · PLAYBOOK</span></div>
+      <div class="body">
+        <h3>AI/Agent 体验闭环手册<span class="en">CLOSED-LOOP PLAYBOOK</span></h3>
+        <span class="view">落地工具 · 流程拆解</span>
+        <p>把字典的六环循环展开成可执行流水线：<strong>正向八站 × 反馈三路</strong>——测试数据集六库、badcase 状态机、五层归因树、对症改进分级、两级回归、A/B 七步、六个问题哨点与闭环健康度五问。</p>
+        <div class="tags"><span>六大测试集</span><span>Badcase 生命周期</span><span>归因树</span><span>A/B 七步</span></div>
+      </div>
+      <div class="go"><span class="file">AI体验指标闭环手册.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d6 rv" href="AI社交体验指标体系.html">
+      <div class="side"><span class="no">06</span><span class="vol">VOL.06 · SOCIAL</span></div>
+      <div class="body">
+        <h3>AI 社交对话 Agent 体验指标体系<span class="en">SOCIAL AGENT METRICS</span></h3>
+        <span class="view">新领域 · 关系与情感</span>
+        <p>社交 Agent 不以「聊得更久」为目标。北极星为<strong>用户真实社交价值实现率</strong>，8 大体验维度 × 3 个时间尺度 × 4 层落地结构，安全与用户自主性作为独立约束贯穿全局，附 MVP 十二项与防指标被优化歪对照表。</p>
+        <div class="tags"><span>8 大维度</span><span>3 时间尺度</span><span>价值留存 vs 行为留存</span><span>玫瑰编辑风格</span></div>
+      </div>
+      <div class="go"><span class="file">AI社交体验指标体系.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d7 rv" href="医院医疗Agent体验指标体系.html">
+      <div class="side"><span class="no">07</span><span class="vol">VOL.07 · CLINICAL</span></div>
+      <div class="body">
+        <h3>医院工作流 Agent 体验指标体系<span class="en">HOSPITAL WORKFLOW METRICS</span></h3>
+        <span class="view">医疗领域 · 流程与安全</span>
+        <p>北极星为<strong>安全约束下的端到端临床工作流成功率</strong>（五个「正确」）。8 大体验维度 + 5 类横向硬约束（安全 / 隐私 / 审计 / 合规 / 稳定性独立门槛）+ 四层诊断模型，附 MVP 十五项与检验异常闭环实例。</p>
+        <div class="tags"><span>五个「正确」</span><span>5 类硬约束</span><span>四层诊断</span><span>蓝紫临床风格</span></div>
+      </div>
+      <div class="go"><span class="file">医院医疗Agent体验指标体系.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d14 rv" href="AI体验指标因果图谱.html">
+      <div class="side"><span class="no">14</span><span class="vol">VOL.14 · CAUSAL MAP</span></div>
+      <div class="body">
+        <h3>指标因果图谱<span class="en">71 NODES × 67 EDGES</span></h3>
+        <span class="view">总图 · 六维泳道因果 DAG</span>
+        <p>71 张拆解卡的全景连线：六维度分泳道排布，67 条贝塞尔因果边贯穿卷间。<strong>点击任意节点</strong>高亮一跳上下游，四条主链（理解主链 / 执行主链 / 结算链 / 情绪链）一键聚焦，张力边虚线标示个性化与隐私的对冲。六卷每张卡脚注均可跳转至此对应锚点。</p>
+        <div class="tags"><span>71 节点</span><span>67 因果边</span><span>4 条主链</span><span>点击高亮</span></div>
+      </div>
+      <div class="go"><span class="file">AI体验指标因果图谱.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d15 rv" href="AI体验指标数据飞轮方案.html">
+      <div class="side"><span class="no">15</span><span class="vol">VOL.15 · DATA FLYWHEEL</span></div>
+      <div class="body">
+        <h3>数据正向飞轮方案<span class="en">4 EVIDENCE × 5 TABLES × 3 VERSIONS</span></h3>
+        <span class="view">燃料层 · 证据采集到数据回流</span>
+        <p>体系与字典的燃料层：四类证据的<strong>采集工程</strong>、三层清洗管道与<strong>五张标准数据表</strong>（含 fact_task 样例表）、15 个代表指标的<strong>取数字段映射</strong>、三层版本管理，以及「采集 → 标准化 → 消费 → 诊断 → 优化 → 沉淀」的<strong>数据正向飞轮</strong>——三圈结构、五项转速指标、三种退化反模式。</p>
+        <div class="tags"><span>五张标准表</span><span>样例数据表</span><span>三层版本</span><span>三圈飞轮</span></div>
+      </div>
+      <div class="go"><span class="file">AI体验指标数据飞轮方案.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d16 rv" href="AI体验体系搭建总纲.html">
+      <div class="side"><span class="no">16</span><span class="vol">VOL.16 · MASTER PLAN</span></div>
+      <div class="body">
+        <h3>体系搭建总纲<span class="en">5 PIECES × 3 PHASES × 17 DOCS</span></h3>
+        <span class="view">收官卷 · 从测量学到治理学</span>
+        <p>系列收官卷：把十六份资产装进<strong>六层栈</strong>（观念 / 字典 / 工程 / 流程 / 边界 / 场景），补齐五件套最后四件——<strong>行为规格 BL 条款、委托阶梯 L0–L5、方差治理、评测所有权</strong>——并给出三阶段路线图、五角色责任矩阵与十七份文档全景索引。验收体系的标准从文档数量换成验收项通过数。</p>
+        <div class="tags"><span>六层资产栈</span><span>五件套</span><span>三阶段路线</span><span>角色矩阵</span></div>
+      </div>
+      <div class="go"><span class="file">AI体验体系搭建总纲.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+    <a class="doc d17 rv" href="AI体验测量地基执行方案.html">
+      <div class="side"><span class="no">17</span><span class="vol">VOL.17 · PHASE 1 PLAYBOOK</span></div>
+      <div class="body">
+        <h3>测量地基执行方案<span class="en">13 WEEKS × 20 CARDS × 5 TABLES</span></h3>
+        <span class="view">总纲 PHASE 1 · 施工日志</span>
+        <p>把总纲第一阶段的 13 周拆成可开工的施工日志：<strong>首批 20 卡</strong>（15 张复用 VOL.15 取数映射 + 5 张红线卡补位）、五段周排期与交付物、5 张红线卡埋点映射规格、BRONZE/GOLD 接线纪律、图谱主链建链与 5 条哨点告警，以及<strong>八项验收清单</strong>——每项有签字人，每类证据通道都不空转。</p>
+        <div class="tags"><span>首批 20 卡</span><span>13 周排期</span><span>5 条哨点</span><span>八项验收</span></div>
+      </div>
+      <div class="go"><span class="file">AI体验测量地基执行方案.html</span><span class="open">打开文档 →</span></div>
+    </a>
+
+  </div>
+
+  <div class="vs rv">
+    <div class="sec-head" style="margin-top:0"><span class="no">02</span><h2>三框架速览</h2><span class="en">DELTA AT A GLANCE</span></div>
+    <div class="rule"></div>
+    <table>
+      <thead><tr><th>维度</th><th class="c1">VOL.01 六维分类</th><th class="c2">VOL.02 信任汇率</th><th class="c3">VOL.03 体验账本</th></tr></thead>
+      <tbody>
+        <tr><td>北极星</td><td>用户目标成功率（能力）</td><td>委托留存率 + 风险迁移（关系）</td><td>体验净值率 NEV（交易）</td></tr>
+        <tr><td>组织逻辑</td><td>六大维度分类学</td><td>三道门槛 + 过程因子 + 复利</td><td>四本账 × 借贷结构</td></tr>
+        <tr><td>质量观</td><td>正确率 / 可用率</td><td>方差 / 承诺兑现 / 暴露率</td><td>净值 = 贷方 − 借方</td></tr>
+        <tr><td>底线处理</td><td>不加权不抵消</td><td>一票否决 + 冻结授权</td><td>红线计赤，不参与平衡</td></tr>
+        <tr><td>典型用法</td><td>评审清单 · 体检表</td><td>增长诊断 · 授权策略</td><td>价值核算 · 防自嗨</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec-head rv" style="margin-top:96px"><span class="no">03</span><h2>按需选择入口</h2><span class="en">WHICH ONE TO OPEN</span></div>
+  <div class="rule rv"></div>
+  <div class="guide rv">
+    <div class="g"><div class="no">壹</div><h5>要建立完整指标词汇 → VOL.01</h5><p>从零搭建指标体系、设计评审 checklist、给团队对齐术语，从这里开始。</p></div>
+    <div class="g"><div class="no">贰</div><h5>要解释信任与增长 → VOL.02</h5><p>回答「用户为什么不敢委托」「留存为什么封顶」，或设计授权与风险迁移机制时用。</p></div>
+    <div class="g"><div class="no">叁</div><h5>要核算真实价值 → VOL.03</h5><p>汇报 AI 价值、防「高成功率假象」、做成本收益决策时用。配合 VOL.04 落地运转。</p></div>
+  </div>
+
+</div>
+
+<footer>
+  <span>AI 体验指标体系研究 · RESEARCH HUB</span>
+  <span>3 PERSPECTIVES × 3 FIELD TOOLS · 2026</span>
+</footer>
+
+<script>
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.08,rootMargin:'0px 0px -4% 0px'});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

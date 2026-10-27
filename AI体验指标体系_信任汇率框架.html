@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>信任汇率 · 一个以关系为核心的 AI 体验指标框架</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --white:#FFFFFF;
+  --ink:#101018;
+  --ink-2:#43424E;
+  --ink-3:#8C8B98;
+  --indigo:#4338CA;
+  --indigo-deep:#241F5E;
+  --indigo-ink:#1B1747;
+  --indigo-mist:#EDEEF9;
+  --red:#C0392B;
+  --red-mist:#FBEFED;
+  --line:#111120;
+  --hair:#E7E6EE;
+  --serif:'Noto Serif SC',serif;
+  --sans:'Noto Sans SC',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--white);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--indigo);color:#fff}
+
+/* 进度条 */
+.progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--indigo);z-index:100}
+
+/* ============ HERO 深蓝色块 ============ */
+.hero{background:linear-gradient(135deg,var(--indigo-ink) 0%,var(--indigo-deep) 55%,#332B85 100%);color:#fff;position:relative;overflow:hidden}
+.hero::before{
+  content:"⇄";position:absolute;right:-40px;top:-90px;font-size:460px;line-height:1;
+  color:rgba(255,255,255,.05);font-weight:400;
+}
+.hero::after{
+  content:"";position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:64px 64px;
+  -webkit-mask-image:radial-gradient(ellipse 60% 80% at 85% 30%,#000,transparent 70%);
+          mask-image:radial-gradient(ellipse 60% 80% at 85% 30%,#000,transparent 70%);
+}
+.hero-in{max-width:1200px;margin:0 auto;padding:130px 48px 96px;position:relative;z-index:2}
+.hero .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.34em;color:#A5A8E8;display:flex;align-items:center;gap:14px;margin-bottom:42px}
+.hero .kicker::after{content:"";flex:0 0 56px;height:1px;background:#A5A8E8}
+.hero h1{font-family:var(--serif);font-weight:900;font-size:clamp(52px,8vw,104px);line-height:1.08;letter-spacing:.03em}
+.hero h1 .thin{font-weight:400}
+.hero .sub{margin-top:34px;max-width:640px}
+.hero .sub p{font-size:16.5px;line-height:2.1;color:#C9CBEF}
+.hero .sub strong{color:#fff;font-weight:600}
+.swap{
+  margin-top:44px;display:inline-flex;align-items:center;gap:20px;
+  border:1px solid rgba(255,255,255,.28);padding:16px 28px;
+}
+.swap .s{font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:.1em}
+.swap .x{font-family:var(--mono);color:#A5A8E8;font-size:20px}
+.hero-chips{margin-top:26px;display:flex;gap:10px;flex-wrap:wrap}
+.hero-chips span{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:#C9CBEF;border:1px solid rgba(255,255,255,.2);padding:6px 14px}
+
+/* 框架档案条 */
+.dossier{background:var(--ink);color:#fff}
+.dossier-in{max-width:1200px;margin:0 auto;padding:26px 48px;display:grid;grid-template-columns:repeat(4,1fr);gap:32px}
+.dossier .d .k{font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:#6E6D7E;margin-bottom:8px}
+.dossier .d .v{font-family:var(--serif);font-size:16px;font-weight:600;letter-spacing:.04em}
+.dossier .d .v em{font-style:normal;color:#8F93E8}
+
+/* ============ 骨架 ============ */
+.shell{max-width:1200px;margin:0 auto;padding:0 48px 140px;display:grid;grid-template-columns:190px minmax(0,1fr);gap:76px}
+.toc{position:sticky;top:0;height:100vh;padding-top:110px;align-self:start}
+.toc .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--ink-3);margin-bottom:24px}
+.toc a{display:block;text-decoration:none;padding:8px 0 8px 16px;color:var(--ink-3);font-size:13px;letter-spacing:.06em;border-left:1px solid var(--hair);transition:.3s}
+.toc a .n{font-family:var(--mono);font-size:10.5px;margin-right:8px}
+.toc a:hover{color:var(--ink)}
+.toc a.active{color:var(--ink);font-weight:500;border-left:2px solid var(--indigo);padding-left:15px}
+.toc a.active .n{color:var(--indigo)}
+main{min-width:0;padding-top:110px}
+.sec{margin-bottom:140px;scroll-margin-top:20px}
+
+/* 章头 */
+.ch{display:flex;align-items:baseline;gap:20px;border-bottom:2px solid var(--line);padding-bottom:20px;margin-bottom:14px}
+.ch .no{font-family:var(--mono);font-weight:500;font-size:14px;color:var(--indigo);letter-spacing:.1em}
+.ch h2{font-family:var(--serif);font-weight:900;font-size:clamp(26px,3.4vw,38px);letter-spacing:.05em}
+.ch .en{margin-left:auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--ink-3);white-space:nowrap}
+.lede{font-size:16px;line-height:2.05;color:var(--ink-2);max-width:760px;margin:36px 0 10px;letter-spacing:.012em}
+.lede strong{font-weight:600;color:var(--ink)}
+.mark{background:linear-gradient(transparent 66%,var(--indigo-mist) 66%);font-weight:500}
+
+/* ============ 立场声明 ============ */
+.stance{margin:44px 0 0;display:flex;flex-direction:column;gap:1px;background:var(--line)}
+.stance .s{background:#fff;padding:0 0 0 0;display:grid;grid-template-columns:64px 1fr;border:1px solid var(--line);margin-top:-1px}
+.stance .s .x{border-right:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:22px;color:var(--red);background:var(--red-mist)}
+.stance .s .b{padding:24px 30px}
+.stance .s .b h5{font-family:var(--serif);font-weight:700;font-size:17.5px;margin-bottom:8px;letter-spacing:.03em}
+.stance .s .b p{font-size:14px;line-height:1.95;color:var(--ink-2)}
+.stance .s .b p strong{color:var(--indigo);font-weight:600}
+
+/* ============ 北极星 ============ */
+.north{display:grid;grid-template-columns:1.05fr .95fr;gap:1px;background:var(--line);border:1px solid var(--line);margin:44px 0 26px}
+.north .l{background:var(--indigo-ink);color:#fff;padding:46px 44px}
+.north .l .k{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:#8F93E8;margin-bottom:20px}
+.north .l h3{font-family:var(--serif);font-weight:900;font-size:34px;letter-spacing:.06em;line-height:1.3}
+.north .l h3 span{color:#A5A8E8}
+.north .l .en{font-family:var(--mono);font-size:11.5px;color:#6E72B8;letter-spacing:.14em;margin-top:12px}
+.north .r{background:#fff;padding:46px 44px}
+.north .r .k{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--indigo);margin-bottom:20px}
+.north .r p{font-size:14.5px;line-height:2.05;color:var(--ink-2)}
+.north .r p+p{margin-top:1.1em}
+.north .r strong{color:var(--ink)}
+.f-def{
+  margin:0 0 30px;border:1px solid var(--line);background:#FAFAFC;padding:28px 32px;
+  display:flex;gap:36px;flex-wrap:wrap;align-items:center;
+}
+.f-def .fn{font-family:var(--serif);font-weight:700;font-size:16px;letter-spacing:.06em;white-space:nowrap}
+.f-def .feq{font-family:var(--mono);color:var(--indigo);font-size:17px}
+.f-def .frac{display:inline-flex;flex-direction:column;text-align:center;font-size:13px;color:var(--ink-2)}
+.f-def .frac .a{padding:0 12px 7px;border-bottom:1.5px solid var(--ink)}
+.f-def .frac .b{padding:7px 12px 0}
+.f-def .ftail{font-family:var(--mono);font-size:13px;color:var(--indigo)}
+.callout{border-left:3px solid var(--indigo);background:#FAFAFC;padding:22px 28px;max-width:760px;margin:34px 0}
+.callout .t{font-family:var(--serif);font-weight:700;font-size:15.5px;margin-bottom:8px}
+.callout p{font-size:14px;line-height:1.95;color:var(--ink-2)}
+
+/* ============ 门槛 ============ */
+.gate{margin:70px 0 0}
+.gate-head{display:flex;align-items:baseline;gap:18px;margin-bottom:8px}
+.gate-head .gn{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:#fff;background:var(--indigo);padding:6px 14px}
+.gate-head h3{font-family:var(--serif);font-weight:900;font-size:26px;letter-spacing:.05em}
+.gate-head .en{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--ink-3);margin-left:auto}
+.gate-lede{font-size:14.5px;color:var(--ink-3);line-height:1.9;margin-bottom:24px;max-width:700px}
+.tw{overflow-x:auto;margin:0 0 8px;border-top:2px solid var(--line)}
+table{width:100%;border-collapse:collapse;min-width:600px}
+th{font-family:var(--mono);font-weight:500;font-size:10.5px;letter-spacing:.2em;color:var(--indigo);text-align:left;padding:13px 16px 11px;border-bottom:1px solid var(--hair);white-space:nowrap}
+td{font-size:14px;line-height:1.85;padding:14px 16px;border-bottom:1px solid var(--hair);vertical-align:top;color:var(--ink-2)}
+td:first-child{font-weight:500;color:var(--ink);white-space:nowrap}
+td .en{display:block;font-family:var(--mono);font-weight:400;font-size:11px;color:var(--indigo);margin-top:3px;letter-spacing:.03em}
+tbody tr{transition:background .25s}
+tbody tr:hover{background:var(--indigo-mist)}
+.gate-note{margin:22px 0 0;padding:20px 26px;background:var(--indigo-mist);font-size:14px;line-height:1.95;color:var(--indigo-ink)}
+.gate-note strong{font-weight:600}
+
+/* ============ 过程因子 ============ */
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin:44px 0 8px}
+.tri .t{background:#fff;padding:32px 28px 36px;transition:background .3s}
+.tri .t:hover{background:var(--indigo-mist)}
+.tri .t .sym{font-family:var(--mono);font-size:26px;color:var(--indigo);line-height:1}
+.tri .t h5{font-family:var(--serif);font-weight:700;font-size:19px;margin:16px 0 4px;letter-spacing:.04em}
+.tri .t .en{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--ink-3)}
+.tri .t p{font-size:13px;line-height:1.95;color:var(--ink-2);margin-top:14px}
+.tri .t ul{list-style:none;margin-top:14px;border-top:1px dashed var(--hair);padding-top:12px}
+.tri .t li{font-size:12.5px;color:var(--ink-2);padding:4px 0 4px 16px;position:relative}
+.tri .t li::before{content:"—";position:absolute;left:0;color:var(--indigo)}
+
+/* ============ 复利曲线 ============ */
+.curve{margin:44px 0;border:1px solid var(--line)}
+.curve-top{background:var(--indigo-ink);color:#fff;padding:30px 36px;display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.curve-top .k{font-family:var(--mono);font-size:11px;letter-spacing:.28em;color:#8F93E8}
+.curve-top h4{font-family:var(--serif);font-weight:900;font-size:22px;letter-spacing:.05em}
+.curve-top p{font-size:13.5px;color:#C9CBEF;line-height:1.85;flex:1;min-width:280px}
+.svg-wrap{padding:34px 36px 10px;background:#fff}
+.svg-wrap svg{width:100%;height:auto;display:block}
+.curve-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--hair);border-top:1px solid var(--line)}
+.curve-metrics .cm{background:#fff;padding:20px 26px}
+.curve-metrics .cm h6{font-size:14px;font-weight:600;margin-bottom:4px}
+.curve-metrics .cm h6 .en{font-family:var(--mono);font-weight:400;font-size:10.5px;color:var(--indigo);margin-left:8px}
+.curve-metrics .cm p{font-size:12.5px;line-height:1.8;color:var(--ink-3)}
+
+/* ============ 红线 ============ */
+.redzone{margin:44px 0;border:2px solid var(--red)}
+.redzone-top{background:var(--red);color:#fff;padding:26px 36px;display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+.redzone-top .k{font-family:var(--mono);font-size:11px;letter-spacing:.28em;opacity:.85}
+.redzone-top h4{font-family:var(--serif);font-weight:900;font-size:22px;letter-spacing:.06em}
+.redzone-top .rule{margin-left:auto;font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;border:1px solid rgba(255,255,255,.5);padding:6px 14px}
+.red-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--red-mist)}
+.red-grid .r{background:#fff;padding:22px 18px 26px;text-align:left;transition:background .3s}
+.red-grid .r:hover{background:var(--red-mist)}
+.red-grid .r .no{font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:.14em}
+.red-grid .r h6{font-size:14.5px;font-weight:600;margin:10px 0 8px}
+.red-grid .r p{font-size:12px;line-height:1.8;color:var(--ink-3)}
+.redzone-foot{border-top:1px solid var(--red);background:var(--red-mist);padding:18px 36px;font-size:13.5px;color:var(--red);font-weight:500}
+
+/* ============ MVP ============ */
+.mvp{margin:44px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.mvp .m{background:#fff;padding:28px 24px 32px;position:relative;transition:background .3s}
+.mvp .m:hover{background:var(--indigo-mist)}
+.mvp .m .no{font-family:var(--mono);font-size:12px;color:var(--indigo);letter-spacing:.1em}
+.mvp .m h6{font-family:var(--serif);font-weight:700;font-size:16.5px;margin:12px 0 6px;letter-spacing:.03em}
+.mvp .m .en{font-family:var(--mono);font-size:10px;color:var(--ink-3);letter-spacing:.08em;display:block;margin-bottom:10px}
+.mvp .m p{font-size:12.5px;line-height:1.85;color:var(--ink-2)}
+.mvp .m .gate-tag{position:absolute;top:24px;right:20px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--indigo);border:1px solid var(--indigo);padding:3px 8px}
+
+/* ============ 测量哲学 ============ */
+.philo{margin:44px 0;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+.philo .p{background:#fff;padding:34px 34px 38px;transition:background .3s}
+.philo .p:hover{background:var(--indigo-mist)}
+.philo .p .no{font-family:var(--serif);font-weight:400;font-size:15px;color:var(--indigo)}
+.philo .p h5{font-family:var(--serif);font-weight:700;font-size:19px;margin:12px 0 4px;letter-spacing:.03em}
+.philo .p .vs{font-family:var(--mono);font-size:10.5px;color:var(--red);letter-spacing:.1em;margin-bottom:12px}
+.philo .p p{font-size:13.5px;line-height:2;color:var(--ink-2)}
+
+/* ============ 对照表 ============ */
+.vs{margin:44px 0;border-top:2px solid var(--line)}
+.vs table{min-width:640px}
+.vs td:first-child{color:var(--ink-3);font-weight:400;white-space:nowrap}
+.vs .old{color:var(--ink-3)}
+.vs .new{color:var(--indigo);font-weight:500}
+
+/* ============ 结语 ============ */
+.coda{border:1px solid var(--line);background:var(--indigo-ink);color:#fff;padding:52px 54px;position:relative;overflow:hidden}
+.coda::before{content:"⇄";position:absolute;right:-20px;bottom:-110px;font-size:300px;color:rgba(255,255,255,.05);line-height:1}
+.coda .k{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:#8F93E8;margin-bottom:22px}
+.coda p{font-size:15.5px;line-height:2.15;color:#D3D5F5;max-width:720px;position:relative;z-index:2}
+.coda strong{color:#fff;font-weight:600}
+.coda .hl{color:#fff;border-bottom:1px solid rgba(255,255,255,.5)}
+
+footer{border-top:1px solid var(--line);max-width:1200px;margin:0 auto;padding:36px 48px 44px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--ink-3);flex-wrap:wrap;gap:10px}
+
+.top{position:fixed;right:32px;bottom:32px;width:44px;height:44px;background:#fff;border:1px solid var(--line);cursor:pointer;opacity:0;pointer-events:none;transition:.35s;z-index:90;font-family:var(--mono);color:var(--indigo);font-size:14px}
+.top.show{opacity:1;pointer-events:auto}
+.top:hover{background:var(--indigo);color:#fff}
+
+/* 动画 */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .8s cubic-bezier(.22,.61,.36,1),transform .8s cubic-bezier(.22,.61,.36,1)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}}
+
+@media (max-width:1080px){
+  .toc{display:none}
+  .shell{grid-template-columns:1fr;gap:0}
+}
+@media (max-width:820px){
+  .hero-in{padding:90px 26px 70px}
+  .shell{padding:0 26px 100px}
+  .dossier-in{grid-template-columns:1fr 1fr;padding:26px}
+  .north,.tri,.philo,.curve-metrics{grid-template-columns:1fr}
+  .mvp{grid-template-columns:1fr 1fr}
+  .red-grid{grid-template-columns:1fr 1fr}
+  .stance .s{grid-template-columns:48px 1fr}
+  .coda{padding:38px 26px}
+  footer{padding:32px 26px}
+  .sec{margin-bottom:100px}
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-in">
+    <div class="kicker rv">ALTERNATIVE FRAMEWORK · 独立构建版</div>
+    <h1 class="rv" style="transition-delay:.08s">信任<span class="thin">汇率</span></h1>
+    <div class="sub rv" style="transition-delay:.16s">
+      <p>AI 体验的本质不是「好用」，而是一场持续的交易：用户让渡<strong>自主权</strong>，AI 偿还<strong>价值</strong>。因此，度量对象不应该是单次交互的满意度，而是这场交易的<strong>汇率</strong>——以及它的趋势。</p>
+    </div>
+    <div class="swap rv" style="transition-delay:.24s">
+      <span class="s">自主权</span><span class="x">⇄</span><span class="s">价值</span>
+    </div>
+    <div class="hero-chips rv" style="transition-delay:.3s">
+      <span>TRUST EXCHANGE RATE</span><span>1 NORTH STAR</span><span>3 GATES</span><span>3 FACTORS</span><span>1 COMPOUNDING CURVE</span><span>5 RED LINES</span>
+    </div>
+  </div>
+</header>
+
+<!-- 框架档案 -->
+<div class="dossier">
+  <div class="dossier-in">
+    <div class="d"><div class="k">FRAMEWORK NAME</div><div class="v">信任汇率<em> · TRX</em></div></div>
+    <div class="d"><div class="k">ORGANIZING LOGIC</div><div class="v">决策心理 <em>而非指标分类学</em></div></div>
+    <div class="d"><div class="k">NORTH STAR</div><div class="v">委托留存率<em> · 关系性指标</em></div></div>
+    <div class="d"><div class="k">TOTAL METRICS</div><div class="v"><em>24</em> 项核心 + <em>5</em> 条红线</div></div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <nav class="toc" id="toc">
+    <div class="lbl">INDEX</div>
+    <a href="#s1" class="active"><span class="n">01</span>立场声明</a>
+    <a href="#s2"><span class="n">02</span>北极星</a>
+    <a href="#s3"><span class="n">03</span>三道门槛</a>
+    <a href="#s4"><span class="n">04</span>过程因子</a>
+    <a href="#s5"><span class="n">05</span>复利曲线</a>
+    <a href="#s6"><span class="n">06</span>红线指标</a>
+    <a href="#s7"><span class="n">07</span>MVP 面板</a>
+    <a href="#s8"><span class="n">08</span>测量哲学</a>
+    <a href="#s9"><span class="n">09</span>框架对照</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 01 立场声明 ============ -->
+  <section class="sec" id="s1">
+    <div class="ch rv"><span class="no">01</span><h2>立场声明</h2><span class="en">DESIGN STANCE</span></div>
+    <p class="lede rv">一个指标框架的第一性问题不是「列哪些指标」，而是<strong>相信体验由什么构成</strong>。以下三个判断，决定了这套框架与常规做法的分野。</p>
+    <div class="stance rv">
+      <div class="s">
+        <div class="x">✕</div>
+        <div class="b">
+          <h5>体验的终点不是「任务完成」，而是「下次还敢交给它」</h5>
+          <p>成功率再高的产品，用户也可能只敢把低风险琐事交给它。真正的体验增长，是用户委托的<strong>风险等级随时间上移</strong>。所以北极星必须是关系指标，不是能力指标。</p>
+        </div>
+      </div>
+      <div class="s">
+        <div class="x">✕</div>
+        <div class="b">
+          <h5>摧毁信任的不是低均值，而是高方差</h5>
+          <p>用户可以原谅「它做得一般」，但无法忍受「它时好时坏」。<strong>确定性优先于质量</strong>：输出方差、沉默失败、承诺兑现，比平均分更能预测信任走向。</p>
+        </div>
+      </div>
+      <div class="s">
+        <div class="x">✕</div>
+        <div class="b">
+          <h5>问卷测不出信任，授权额度才测得出</h5>
+          <p>「你信任这个 AI 吗」的主观评分充满噪音。用户实际设置的<strong>自主权限档位、授权范围、免确认白名单</strong>，才是信任的可观测刻度。行为优先于陈述。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 北极星 ============ -->
+  <section class="sec" id="s2">
+    <div class="ch rv"><span class="no">02</span><h2>北极星：委托留存率</h2><span class="en">NORTH STAR</span></div>
+    <div class="north rv">
+      <div class="l">
+        <div class="k">NORTH STAR METRIC</div>
+        <h3>委托留存率<span>。</span></h3>
+        <div class="en">DELEGATION RETENTION RATE · DRR</div>
+      </div>
+      <div class="r">
+        <div class="k">WHY NOT 「任务成功率」</div>
+        <p><strong>成功率是能力指标，委托留存是关系指标。</strong>一次性的 100% 成功率不构成体验；用户在下一次面对更重要、更有风险的任务时，仍然选择交给它——这才是信任被兑付的时刻。</p>
+        <p>它把<strong>能力、确定性、恢复力、透明度</strong>全部折叠进一个用户用脚投票的数字里：任何一环崩塌，都会立刻反映在下一次委托的犹豫上。</p>
+      </div>
+    </div>
+    <div class="f-def rv">
+      <span class="fn">委托留存率</span><span class="feq">=</span>
+      <span class="frac"><span class="a">窗口期内再次委托（重要性 ≥ 上次）的用户数</span><span class="b">上期发生过成功委托的用户数</span></span>
+      <span class="ftail">× 100%</span>
+    </div>
+    <div class="callout rv">
+      <div class="t">配套指标：委托风险等级迁移率 · Risk-tier Migration</div>
+      <p>将任务按风险分级（L0 只读 → L1 可逆写 → L2 高影响 → L3 不可逆），观测用户委托的风险层级是否随时间<strong>上移</strong>。风险等级上移是信任增长的最真实信号；迁移停滞，说明信任被封顶在某一层——那里就是产品体验的真实边界。</p>
+    </div>
+  </section>
+
+  <!-- ============ 03 三道门槛 ============ -->
+  <section class="sec" id="s3">
+    <div class="ch rv"><span class="no">03</span><h2>三道门槛</h2><span class="en">THREE GATES</span></div>
+    <p class="lede rv">用户的心理闸门依次打开：<strong>它懂不懂我 → 它靠不靠谱 → 出了事怎么办</strong>。每道门槛被卡住，委托就不会发生。门槛模型把指标从「分类罗列」变成「漏斗诊断」——你知道问题卡在哪一道。</p>
+
+    <div class="gate rv">
+      <div class="gate-head"><span class="gn">GATE 1</span><h3>懂不懂</h3><span class="en">ALIGNMENT GATE · 度量「让 AI 懂」的成本</span></div>
+      <p class="gate-lede">不是问「AI 理解了吗」，而是问「用户为了让它理解，付出了多少」。</p>
+      <div class="tw"><table>
+        <thead><tr><th>指标</th><th>定义与度量</th></tr></thead>
+        <tbody>
+          <tr><td>首次对齐轮数<span class="en">Rounds to Alignment</span></td><td>目标被正确理解之前，用户平均需要输入的轮数。对齐成本是对齐质量的价格标签。</td></tr>
+          <tr><td>约束存活率<span class="en">Constraint Survival</span></td><td>任务执行全程结束时，初始约束仍然被遵守的比例。度量约束在长程执行中的<strong>衰减</strong>，而非单点遵循。</td></tr>
+          <tr><td>上下文免复述率<span class="en">Context Non-repetition</span></td><td>无需用户重复提供已给过信息的任务比例。每一次「我刚才说过了」都是一次信任扣款。</td></tr>
+          <tr><td>隐含意图命中率<span class="en">Implicit Intent Hit</span></td><td>未被明说、但被正确推断并满足的需求比例。理解的天花板是推断，不是复读。</td></tr>
+          <tr><td>目标改道成本<span class="en">Redirect Cost</span></td><td>用户中途变更目标后，系统完成改向所需的轮数与废弃工作量。改道是否顺畅，决定用户敢不敢边走边想。</td></tr>
+        </tbody>
+      </table></div>
+      <div class="gate-note"><strong>诊断信号：</strong>对齐轮数高但纠错率低 → 理解问题；纠错率高 → 交互设计问题。同一道门，两种病因。</div>
+    </div>
+
+    <div class="gate rv">
+      <div class="gate-head"><span class="gn">GATE 2</span><h3>靠不靠谱</h3><span class="en">PERFORMANCE GATE · 度量履约的确定性而非均值</span></div>
+      <p class="gate-lede">信任的敌人不是「做得一般」，而是「时好时坏」。这道门全部围绕<strong>方差、承诺与暴露</strong>构建。</p>
+      <div class="tw"><table>
+        <thead><tr><th>指标</th><th>定义与度量</th></tr></thead>
+        <tbody>
+          <tr><td>输出方差系数<span class="en">Output Variance</span></td><td>同类任务多次执行的结果质量离散度（CV 值）。先看方差，再看均值——高方差的高均值不可信。</td></tr>
+          <tr><td>承诺兑现率<span class="en">Commitment Fulfillment</span></td><td>AI 明确声称将做或已做的事项中，与实际相符的比例。说「已完成」而实际未完成，是最重的信任违规。</td></tr>
+          <tr><td>关键论断溯源率<span class="en">Claim Grounding</span></td><td>影响用户决策的关键论断中，可溯源到明确证据的比例。不可溯源的流利，比明显的错误更危险。</td></tr>
+          <tr><td>幻觉暴露率<span class="en">Hallucination Exposure</span></td><td>用户<strong>实际接触到</strong>的错误断言比例。内部错误率再高，只要被前置拦截就不伤体验；暴露率才是伤害率。</td></tr>
+          <tr><td>交付前置检率<span class="en">Pre-delivery Verification</span></td><td>结果在交付用户前，经系统自检或验证环节处理的比例。把质检成本从用户侧搬回系统侧。</td></tr>
+        </tbody>
+      </table></div>
+      <div class="gate-note"><strong>诊断信号：</strong>均值达标但留存差 → 检查方差与承诺兑现率；溯源率低 → 幻觉暴露只是时间问题。</div>
+    </div>
+
+    <div class="gate rv">
+      <div class="gate-head"><span class="gn">GATE 3</span><h3>出事怎么办</h3><span class="en">RECOVERY GATE · 度量失败的代价与可控性</span></div>
+      <p class="gate-lede">用户真正的问题从来不是「它会出错吗」（会），而是「出错时我还在不在控制中」。</p>
+      <div class="tw"><table>
+        <thead><tr><th>指标</th><th>定义与度量</th></tr></thead>
+        <tbody>
+          <tr><td>首错拦截率<span class="en">First-error Interception</span></td><td>错误在造成用户实际损失之前，被系统或用户捕获的比例。拦截在事前，体验无损。</td></tr>
+          <tr><td>沉默失败率<span class="en">Silent Failure</span></td><td>系统已出错但未主动告知、最终由用户自行发现的比例。<strong>最伤信任的失败形式</strong>——比失败本身更伤的是隐瞒。</td></tr>
+          <tr><td>恢复成本比<span class="en">Recovery Cost Ratio</span></td><td>从失败到恢复所需时间 ÷ 正常完成同类任务所需时间。比值 > 1 意味着「错了不如重做」。</td></tr>
+          <tr><td>损失半径<span class="en">Blast Radius</span></td><td>单次失败的影响面 = 波及对象数 × 可逆性衰减。度量的是「最坏情况有多坏」，而非平均损失。</td></tr>
+          <tr><td>二次失败率<span class="en">Repeat Failure</span></td><td>同类错误在恢复执行后再次发生的比例。恢复不防复发，等于把挫败感加倍。</td></tr>
+        </tbody>
+      </table></div>
+      <div class="gate-note"><strong>诊断信号：</strong>沉默失败率高于 5% → 透明度存在系统性缺陷，先修告知机制再谈恢复速度。</div>
+    </div>
+  </section>
+
+  <!-- ============ 04 过程因子 ============ -->
+  <section class="sec" id="s4">
+    <div class="ch rv"><span class="no">04</span><h2>三个过程因子</h2><span class="en">PROCESS FACTORS</span></div>
+    <p class="lede rv">三道门槛之间，有三个持续作用于全程的<strong>体验因子</strong>。它们不决定委托是否发生，但决定委托过程中的<strong>心理损耗</strong>——也就是汇率的摩擦成本。</p>
+    <div class="tri rv">
+      <div class="t">
+        <div class="sym">◫</div>
+        <h5>黑盒税</h5>
+        <div class="en">OPACITY TAX</div>
+        <p>用户为「看不见过程」付出的额外认知成本：盯着进度条猜、反复确认、不敢离开。</p>
+        <ul>
+          <li>过程可解释覆盖率</li>
+          <li>决策依据可见率</li>
+          <li>监督时间占比（盯 AI 的时间 ÷ 任务总时长）</li>
+        </ul>
+      </div>
+      <div class="t">
+        <div class="sym">◷</div>
+        <h5>主观节奏</h5>
+        <div class="en">PERCEIVED TEMPO</div>
+        <p>等待不是时间的函数，是预期的函数。可预估的长等优于不可预估的短等。</p>
+        <ul>
+          <li>进度可预期率（能否预估剩余时间）</li>
+          <li>卡顿感知率（无反馈间隙的主观报告）</li>
+          <li>打断友好度（暂停 / 修改的即时流畅度）</li>
+        </ul>
+      </div>
+      <div class="t">
+        <div class="sym">⏻</div>
+        <h5>介入权确证</h5>
+        <div class="en">INTERVENTION ASSURANCE</div>
+        <p>关键不是「能介入」，而是「确信随时能介入」。确证来自演练，不来自承诺。</p>
+        <ul>
+          <li>接管演练成功率（介入后无缝继续）</li>
+          <li>权限边界清晰度（AI 会不会做什么说不清的事）</li>
+          <li>停止键信任度（相信停止立即生效的比例）</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 复利曲线 ============ -->
+  <section class="sec" id="s5">
+    <div class="ch rv"><span class="no">05</span><h2>复利曲线</h2><span class="en">COMPOUNDING CURVE</span></div>
+    <p class="lede rv">一次性兑换是工具，持续升值才是关系。<strong>AI 体验的长期护城河，是边际对齐成本的持续递减</strong>——它越用越懂你，你的每一次使用都在降低下一次的成本。这条曲线的斜率，决定用户在竞品面前的迁移壁垒。</p>
+    <div class="curve rv">
+      <div class="curve-top">
+        <div>
+          <div class="k">COMPOUNDING</div>
+          <h4>使用次数 → 对齐成本</h4>
+        </div>
+        <p>理想曲线：同类任务的第 N 次对齐成本应显著低于第 1 次。曲线走平，意味着「AI 没有在积累关于你的任何东西」——体验停留在工具层面。</p>
+      </div>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 720 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="对齐成本随使用次数递减的曲线示意">
+          <line x1="60" y1="20" x2="60" y2="200" stroke="#E7E6EE" stroke-width="1"/>
+          <line x1="60" y1="200" x2="690" y2="200" stroke="#111120" stroke-width="1.5"/>
+          <line x1="60" y1="60" x2="690" y2="60" stroke="#E7E6EE" stroke-width="1" stroke-dasharray="4 4"/>
+          <text x="52" y="64" text-anchor="end" font-family="IBM Plex Mono" font-size="10" fill="#8C8B98">首轮成本</text>
+          <text x="52" y="204" text-anchor="end" font-family="IBM Plex Mono" font-size="10" fill="#8C8B98">0</text>
+          <path d="M60 52 C 200 58, 300 120, 420 160 S 620 186, 680 188" stroke="#4338CA" stroke-width="2.5" fill="none"/>
+          <path d="M60 52 C 200 56, 380 54, 680 56" stroke="#C0392B" stroke-width="1.5" stroke-dasharray="5 5" fill="none"/>
+          <text x="684" y="46" text-anchor="end" font-family="IBM Plex Mono" font-size="10" fill="#C0392B">无记忆的工具（对照）</text>
+          <text x="660" y="178" text-anchor="end" font-family="IBM Plex Mono" font-size="10" fill="#4338CA">复利曲线</text>
+          <text x="375" y="228" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#8C8B98">使用次数 →</text>
+        </svg>
+      </div>
+      <div class="curve-metrics">
+        <div class="cm"><h6>边际对齐成本递减率<span class="en">Marginal Alignment Decay</span></h6><p>同类任务第 N 次对齐轮数相对第 1 次的下降幅度。复利存在性的直接检验。</p></div>
+        <div class="cm"><h6>偏好记忆命中率<span class="en">Preference Memory Hit</span></h6><p>主动应用用户历史偏好（无需重申）的比例。沉默的正确，胜过热情的询问。</p></div>
+        <div class="cm"><h6>零提示启动率<span class="en">Zero-prompt Initiation</span></h6><p>用户给出残缺指令时，仍能结合历史上下文正确启动任务的比例。</p></div>
+        <div class="cm"><h6>迁移损失感知度<span class="en">Switching Loss</span></h6><p>用户可感知的「换掉它我将失去什么」。留存的结构性来源，建议用访谈度量而非埋点。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 06 红线 ============ -->
+  <section class="sec" id="s6">
+    <div class="ch rv"><span class="no">06</span><h2>红线指标</h2><span class="en">RED LINES</span></div>
+    <p class="lede rv">汇率再高，也不允许用底线事件去平均。<strong>红线不参与任何加权计算</strong>——它不是仪表盘上的一格，而是断路器。</p>
+    <div class="redzone rv">
+      <div class="redzone-top">
+        <span class="k">CIRCUIT BREAKER</span>
+        <h4>一票否决</h4>
+        <span class="rule">TRIGGER → 冻结授权扩张</span>
+      </div>
+      <div class="red-grid">
+        <div class="r"><div class="no">R-01</div><h6>安全违规</h6><p>违反安全政策、权限或关键约束的任务。</p></div>
+        <div class="r"><div class="no">R-02</div><h6>未授权操作</h6><p>超出用户授权范围执行的操作，无论结果好坏。</p></div>
+        <div class="r"><div class="no">R-03</div><h6>不可逆损失</h6><p>造成无法恢复的数据、资金或关系损失。</p></div>
+        <div class="r"><div class="no">R-04</div><h6>高风险幻觉暴露</h6><p>医疗、法律、金融等高风险场景的错误断言到达用户。</p></div>
+        <div class="r"><div class="no">R-05</div><h6>隐私越界</h6><p>未授权使用、推断或外传用户数据。</p></div>
+      </div>
+      <div class="redzone-foot">任一红线事件触发：自动冻结该用户授权额度扩张，直至事件闭环复盘完成。</div>
+    </div>
+  </section>
+
+  <!-- ============ 07 MVP ============ -->
+  <section class="sec" id="s7">
+    <div class="ch rv"><span class="no">07</span><h2>MVP 面板：先测这 8 个</h2><span class="en">MINIMUM VIABLE PANEL</span></div>
+    <p class="lede rv">不做 24 项全家桶。起步阶段只保留能<strong>定位门槛卡点</strong>的最小集合。</p>
+    <div class="mvp rv">
+      <div class="m"><div class="no">01</div><span class="gate-tag">北极星</span><h6>委托留存率</h6><span class="en">DELEGATION RETENTION</span><p>下一次还敢不敢交给它。</p></div>
+      <div class="m"><div class="no">02</div><span class="gate-tag">北极星</span><h6>风险等级迁移率</h6><span class="en">RISK-TIER MIGRATION</span><p>信任是否在向上生长。</p></div>
+      <div class="m"><div class="no">03</div><span class="gate-tag">门 1</span><h6>首次对齐轮数</h6><span class="en">ROUNDS TO ALIGNMENT</span><p>让 AI 懂的成本。</p></div>
+      <div class="m"><div class="no">04</div><span class="gate-tag">门 2</span><h6>输出方差系数</h6><span class="en">OUTPUT VARIANCE</span><p>稳定性先于质量。</p></div>
+      <div class="m"><div class="no">05</div><span class="gate-tag">门 2</span><h6>幻觉暴露率</h6><span class="en">HALLUCINATION EXPOSURE</span><p>伤害率而非发生率。</p></div>
+      <div class="m"><div class="no">06</div><span class="gate-tag">门 3</span><h6>沉默失败率</h6><span class="en">SILENT FAILURE</span><p>隐瞒比失败更贵。</p></div>
+      <div class="m"><div class="no">07</div><span class="gate-tag">门 3</span><h6>恢复成本比</h6><span class="en">RECOVERY COST RATIO</span><p>错了是否不如重做。</p></div>
+      <div class="m"><div class="no">08</div><span class="gate-tag">复利</span><h6>边际对齐成本递减率</h6><span class="en">ALIGNMENT DECAY</span><p>关系是否在升值。</p></div>
+    </div>
+  </section>
+
+  <!-- ============ 08 测量哲学 ============ -->
+  <section class="sec" id="s8">
+    <div class="ch rv"><span class="no">08</span><h2>测量哲学</h2><span class="en">MEASUREMENT PHILOSOPHY</span></div>
+    <p class="lede rv">四条元规则，决定这套体系读出来的数字是否可信。</p>
+    <div class="philo rv">
+      <div class="p">
+        <div class="no">Ⅰ</div>
+        <h5>授权额度是信任刻度</h5>
+        <div class="vs">REPLACES → 信任主观问卷</div>
+        <p>观测用户实际设置的权限档位、免确认白名单、授权范围随时间的变化。人的陈述会讨好产品，人的授权设置不会。</p>
+      </div>
+      <div class="p">
+        <div class="no">Ⅱ</div>
+        <h5>方差优先于均值</h5>
+        <div class="vs">REPLACES → 平均质量分</div>
+        <p>任何质量指标都必须同时报告其离散度。一条方差收窄的质量爬升曲线，才代表系统性进步；方差发散的均值上升只是运气。</p>
+      </div>
+      <div class="p">
+        <div class="no">Ⅲ</div>
+        <h5>暴露率优先于发生率</h5>
+        <div class="vs">REPLACES → 模型内部错误率</div>
+        <p>只有效 reaches 用户的错误才构成体验伤害。内部错误被前置拦截得越多，系统越健康——即使内部错误率不变。</p>
+      </div>
+      <div class="p">
+        <div class="no">Ⅳ</div>
+        <h5>失败样本优先于成功样本</h5>
+        <div class="vs">REPLACES → 全量满意度分布</div>
+        <p>诊断体验问题时，失败与放弃的会话样本价值远高于成功样本。成功证明汇率成立，失败揭示汇率在哪一步漏损。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 09 对照 ============ -->
+  <section class="sec" id="s9">
+    <div class="ch rv"><span class="no">09</span><h2>与「六维分类框架」的对照</h2><span class="en">FRAMEWORK DELTA</span></div>
+    <p class="lede rv">两个框架不是对错关系，而是<strong>观测位置不同</strong>：前者是一份完备的指标分类学（What to measure），本框架是一条信任形成的因果链（Why trust grows or dies）。实践中可以用前者做体检表、用本框架做诊断刀。</p>
+    <div class="vs rv"><table>
+      <thead><tr><th>维度</th><th>六维分类框架</th><th>信任汇率框架</th></tr></thead>
+      <tbody>
+        <tr><td>北极星选择</td><td class="old">用户目标成功率 —— 能力视角</td><td class="new">委托留存率 + 风险迁移 —— 关系视角</td></tr>
+        <tr><td>组织逻辑</td><td class="old">六大维度分类学（并列）</td><td class="new">三道门槛 + 过程因子 + 复利（因果漏斗）</td></tr>
+        <tr><td>质量观</td><td class="old">正确率 / 可用率 / 验收率</td><td class="new">方差 / 承诺兑现 / 暴露率 —— 确定性优先</td></tr>
+        <tr><td>底线处理</td><td class="old">不简单相加、不被高分抵消</td><td class="new">红线一票否决 + 自动冻结授权扩张</td></tr>
+        <tr><td>信任度量</td><td class="old">信任校准度（主观评分）</td><td class="new">授权额度观测（行为刻度）</td></tr>
+        <tr><td>长期价值</td><td class="old">持续使用率 / NPS</td><td class="new">边际对齐成本递减 + 迁移损失壁垒</td></tr>
+        <tr><td>典型用法</td><td class="old">指标字典 · 体检表 · 评审清单</td><td class="new">漏斗诊断 · 增长罗盘 · 授权策略设计</td></tr>
+      </tbody>
+    </table></div>
+    <div class="coda rv">
+      <div class="k">CODA · 一句话立场</div>
+      <p>用户不是在评价一个产品，而是在决定<strong>把多少自己交给它</strong>。指标体系的价值，是让这场交换的汇率变得可见——让信任的每一次升值与漏损，都有迹可循。当一个 AI 产品的用户，愿意把风险等级更高的事情继续交给它时，<span class="hl">体验设计就完成了它的兑付</span>。</p>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <span>TRX · TRUST EXCHANGE RATE FRAMEWORK</span>
+  <span>AUTONOMY ⇄ VALUE</span>
+</footer>
+
+<button class="top" id="toTop" aria-label="返回顶部">↑</button>
+
+<script>
+const progress=document.getElementById('progress');
+const toTop=document.getElementById('toTop');
+addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  const p=h.scrollTop/(h.scrollHeight-h.clientHeight);
+  progress.style.width=(p*100).toFixed(2)+'%';
+  toTop.classList.toggle('show',h.scrollTop>600);
+},{passive:true});
+toTop.addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
+
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.08,rootMargin:'0px 0px -4% 0px'});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+const links=[...document.querySelectorAll('.toc a')];
+const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const spy=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.classList.remove('active'));
+      const i=secs.indexOf(e.target);
+      if(i>-1)links[i].classList.add('active');
+    }
+  });
+},{rootMargin:'-25% 0px -65% 0px'});
+secs.forEach(s=>s&&spy.observe(s));
+</script>
+<a href="AI体验指标体系研究汇总.html" title="返回研究汇总" aria-label="返回研究汇总" style="position:fixed;right:34px;bottom:88px;width:46px;height:46px;border-radius:50%;background:#2E2A72;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Noto Serif SC',serif;font-weight:600;font-size:15px;text-decoration:none;z-index:91;box-shadow:0 6px 20px -6px rgba(27,23,71,.45)">汇</a>
+</body>
+</html>

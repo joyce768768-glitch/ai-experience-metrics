@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 体验指标体系 · 数据正向飞轮方案</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F8F7F3;--paper-2:#FFFFFF;
+  --ink:#16151C;--ink-2:#3B3A44;--ink-3:#8B8A93;
+  --indigo:#4338CA;--indigo-deep:#2E2A72;--indigo-mist:#EBECF7;--indigo-fog:#F3F4FB;--indigo-ink:#1B1747;
+  --plum:#52255C;--plum-deep:#3E1B47;--plum-mist:#F3EAF6;
+  --red:#B23A2E;--red-deep:#7A1F2B;--red-mist:#F7E7E4;
+  --ok:#0E7B54;--ok-mist:#E4F2EC;--warn:#B07A1E;--warn-mist:#F8F0DE;
+  --hair:#E5E3DA;--hair-2:#D8D6CC;
+  --serif:'Noto Serif SC',serif;--sans:'Noto Sans SC',sans-serif;--mono:'IBM Plex Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--indigo);color:#fff}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:99;opacity:.5;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E")}
+.progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--indigo);z-index:100}
+
+/* HERO */
+.hero{position:relative;padding:150px 48px 96px;max-width:1280px;margin:0 auto;overflow:hidden}
+.hero::before{content:"";position:absolute;top:-300px;right:-200px;width:720px;height:720px;border-radius:50%;background:radial-gradient(closest-side,rgba(82,37,92,.09),rgba(82,37,92,0));pointer-events:none}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(22,21,28,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(22,21,28,.028) 1px,transparent 1px);background-size:72px 72px;-webkit-mask-image:radial-gradient(ellipse 70% 60% at 30% 20%,#000 30%,transparent 75%);mask-image:radial-gradient(ellipse 70% 60% at 30% 20%,#000 30%,transparent 75%)}
+.hero-inner{position:relative;z-index:2;max-width:900px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.32em;color:var(--indigo);display:flex;align-items:center;gap:16px;margin-bottom:36px}
+.eyebrow::before{content:"";width:44px;height:1px;background:var(--indigo)}
+.hero h1{font-family:var(--serif);font-weight:900;font-size:clamp(40px,6vw,68px);line-height:1.22;letter-spacing:.02em}
+.hero h1 em{font-style:normal;color:var(--plum)}
+.hero .vol{margin-top:26px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.frame-tag{font-family:var(--serif);font-weight:600;font-size:14px;color:var(--plum-deep);border:1px solid var(--plum-deep);padding:7px 18px;letter-spacing:.28em;text-indent:.28em}
+.hero-meta{font-family:var(--mono);font-size:12px;color:var(--ink-3);letter-spacing:.14em}
+.hero-lede{margin-top:48px;max-width:780px}
+.hero-lede p{font-size:16.5px;line-height:2.15;color:var(--ink-2)}
+.hero-lede strong{font-weight:600;color:var(--ink)}
+.mark{background:linear-gradient(transparent 68%,var(--plum-mist) 68%);font-weight:500}
+
+/* 骨架 */
+.shell{max-width:1280px;margin:0 auto;padding:0 48px 140px;display:grid;grid-template-columns:200px minmax(0,1fr);gap:72px}
+.toc{position:sticky;top:0;height:100vh;padding-top:110px;align-self:start}
+.toc-label{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--ink-3);margin-bottom:24px}
+.toc a{display:flex;align-items:baseline;gap:12px;text-decoration:none;padding:8px 0;color:var(--ink-3);font-size:13.5px;position:relative;transition:color .3s}
+.toc a .n{font-family:var(--serif);font-size:13px;width:22px;color:var(--hair-2)}
+.toc a:hover{color:var(--ink)}
+.toc a.active{color:var(--ink);font-weight:500}
+.toc a.active .n{color:var(--indigo)}
+.toc a.active::before{content:"";position:absolute;left:-13px;top:50%;transform:translateY(-50%);width:5px;height:5px;background:var(--indigo);border-radius:50%}
+main{min-width:0;padding-top:110px}
+.sec{margin-bottom:140px;scroll-margin-top:24px}
+.sec-head{display:flex;align-items:flex-start;gap:26px;margin-bottom:26px}
+.sec-num{font-family:var(--serif);font-weight:200;font-size:88px;line-height:.9;color:transparent;-webkit-text-stroke:1.2px rgba(67,56,202,.55);flex-shrink:0;user-select:none}
+.sec-head-txt{padding-top:8px}
+.sec-chapter{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--indigo);margin-bottom:10px}
+.sec-title{font-family:var(--serif);font-weight:700;font-size:clamp(25px,3.2vw,36px);letter-spacing:.04em;line-height:1.3}
+.sec-rule{height:1px;background:var(--hair-2);margin:32px 0 44px;position:relative}
+.sec-rule::before{content:"";position:absolute;left:0;top:-1px;width:72px;height:3px;background:var(--indigo)}
+.prose p{font-size:16px;line-height:2.1;color:var(--ink-2);margin-bottom:1.4em;max-width:780px}
+.prose strong{font-weight:600;color:var(--ink)}
+
+/* 证据获取卡 */
+.ev{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin:36px 0 8px}
+.ev .e{border:1px solid var(--hair-2);background:var(--paper-2);padding:26px 28px 20px;position:relative}
+.ev .e::before{content:"";position:absolute;top:0;left:0;width:44px;height:3px;background:var(--indigo)}
+.ev .no{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--ink-3);margin-bottom:12px}
+.ev h5{font-family:var(--serif);font-weight:700;font-size:18px;letter-spacing:.04em;margin-bottom:6px}
+.ev h5 .en{font-family:var(--mono);font-weight:400;font-size:9.5px;letter-spacing:.14em;color:var(--ink-3);margin-left:8px}
+.ev .anchor{font-size:12px;line-height:1.9;color:var(--ink-3);margin-bottom:14px}
+.ev .anchor b{color:var(--plum);font-weight:500}
+.ev dl{border-top:1px dashed var(--hair)}
+.ev dl div{display:grid;grid-template-columns:64px 1fr;gap:12px;padding:9px 0;border-bottom:1px dashed var(--hair)}
+.ev dl div:last-child{border-bottom:none}
+.ev dt{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--indigo);padding-top:3px}
+.ev dd{font-size:12.5px;line-height:1.95;color:var(--ink-2)}
+.ev dd strong{color:var(--ink);font-weight:600}
+.ev dd .mono{font-family:var(--mono);font-size:11px;color:var(--indigo-deep);background:var(--indigo-mist);padding:1px 6px;white-space:nowrap}
+.ev dd .mono.r{color:var(--red-deep);background:var(--red-mist)}
+
+/* 管道 */
+.pipe{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin:38px 0 10px;border:1px solid var(--hair-2);background:var(--paper-2)}
+.pipe .p{padding:26px 26px 22px;position:relative}
+.pipe .p+.p{border-left:1px dashed var(--hair)}
+.pipe .layer{font-family:var(--mono);font-size:10px;letter-spacing:.24em;margin-bottom:8px}
+.pipe .p1 .layer{color:#8A651F}.pipe .p2 .layer{color:var(--indigo-deep)}.pipe .p3 .layer{color:var(--ok)}
+.pipe h5{font-family:var(--serif);font-weight:700;font-size:17px;margin-bottom:12px;letter-spacing:.04em}
+.pipe ol{list-style:none;counter-reset:pi}
+.pipe ol li{font-size:12.5px;line-height:1.9;color:var(--ink-2);padding:7px 0 7px 26px;position:relative;border-bottom:1px dashed var(--hair)}
+.pipe ol li:last-child{border-bottom:none}
+.pipe ol li::before{counter-increment:pi;content:counter(pi,decimal-leading-zero);position:absolute;left:0;top:9px;font-family:var(--mono);font-size:9.5px;color:var(--indigo)}
+.pipe ol li strong{color:var(--ink);font-weight:600}
+
+/* 图例 */
+.leg{margin:22px 0 0;display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.leg span{font-size:12px;color:var(--ink-3);display:inline-flex;align-items:center;gap:7px}
+.leg i{width:10px;height:10px;display:inline-block;border-radius:2px}
+.leg .c1 i{background:var(--indigo)}
+.leg .c2 i{background:var(--plum)}
+
+/* 表格通用 */
+.inv{overflow-x:auto;margin:36px 0 8px;border-top:2px solid var(--ink)}
+table{width:100%;border-collapse:collapse;min-width:660px}
+th{font-family:var(--mono);font-weight:500;font-size:10.5px;letter-spacing:.18em;color:var(--indigo);text-align:left;padding:13px 16px 11px;border-bottom:1px solid var(--hair-2);white-space:nowrap}
+td{font-size:13.5px;line-height:1.85;padding:13px 16px;border-bottom:1px solid var(--hair);vertical-align:top;color:var(--ink-2)}
+td:first-child{font-weight:600;color:var(--ink);white-space:nowrap}
+tbody tr{transition:background .25s}
+tbody tr:hover{background:var(--indigo-fog)}
+td .mono{font-family:var(--mono);font-size:11.5px;color:var(--indigo-deep);background:var(--indigo-mist);padding:1px 7px;white-space:nowrap}
+td .mono.r{color:var(--red-deep);background:var(--red-mist)}
+td .mono.k{color:#0A5850;background:#E0F1EE}
+.st{font-family:var(--mono);font-size:10px;letter-spacing:.1em;padding:3px 9px;white-space:nowrap}
+.st.b{background:var(--indigo-fog);color:var(--indigo);border:1px solid var(--indigo-mist)}
+.st.g{background:var(--ok-mist);color:var(--ok)}
+.st.w{background:var(--warn-mist);color:var(--warn)}
+.st.d{background:var(--red-mist);color:var(--red)}
+.schema-tbl td:first-child{font-family:var(--mono);font-size:12px;white-space:nowrap}
+.schema-tbl td:nth-child(2){font-family:var(--mono);font-size:11px;color:var(--ink-3);white-space:nowrap}
+.note{margin:10px 0 6px;padding:12px 16px;background:var(--warn-mist);border-left:3px solid var(--warn);font-size:12.5px;line-height:1.9;color:#6B4A12}
+.note b{color:#4A340C}
+
+/* 卡片（复用字典卡结构） */
+.cards{display:flex;flex-direction:column;gap:26px;margin:36px 0 8px}
+.card{border:1px solid var(--hair-2);background:var(--paper-2)}
+.card-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;padding:20px 28px;border-bottom:1px solid var(--hair)}
+.card-head .no{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em}
+.card-head h4{font-family:var(--serif);font-weight:700;font-size:19px;letter-spacing:.04em}
+.card-head .en{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--ink-3)}
+.card-head .badge{margin-left:auto;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;padding:4px 11px}
+.badge.full{background:var(--plum-deep);color:#fff}
+.badge.std{background:var(--indigo-mist);color:var(--indigo-deep)}
+.d7{padding:6px 28px 14px}
+.dr{display:grid;grid-template-columns:96px 1fr;gap:0;border-bottom:1px dashed var(--hair)}
+.dr:last-of-type{border-bottom:none}
+.dr .dk{padding:14px 0;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--indigo);border-right:1px solid var(--hair);display:flex;align-items:flex-start;padding-right:12px;margin-right:18px;min-height:100%}
+.dr .dk.red{color:var(--red)}
+.dr .dc{padding:14px 0;font-size:13.5px;line-height:2;color:var(--ink-2)}
+.dr .dc strong{color:var(--ink);font-weight:600}
+.dr .dc .mono{font-family:var(--mono);font-size:12px;color:var(--indigo-deep);background:var(--indigo-mist);padding:1px 7px;white-space:nowrap}
+.dr .dc .mono.r{color:var(--red-deep);background:var(--red-mist)}
+
+/* 反模式卡 */
+.anti{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px;margin:36px 0 8px}
+.anti .a{border:1px solid var(--red-mist);background:var(--paper-2);padding:24px 24px 20px;position:relative}
+.anti .a::before{content:"";position:absolute;top:0;left:0;width:44px;height:3px;background:var(--red)}
+.anti h5{font-family:var(--serif);font-weight:700;font-size:16.5px;margin-bottom:10px;letter-spacing:.04em}
+.anti h5 .en{display:block;font-family:var(--mono);font-weight:400;font-size:9px;letter-spacing:.18em;color:var(--ink-3);margin-top:4px}
+.anti p{font-size:12.5px;line-height:1.95;color:var(--ink-2);margin-bottom:8px}
+.anti p b{color:var(--red-deep);font-weight:600}
+.anti .fix{font-size:12px;line-height:1.85;color:var(--ink-2);border-top:1px dashed var(--hair);padding-top:10px;margin-top:4px}
+.anti .fix strong{color:var(--ok);font-weight:600}
+
+/* 飞轮 */
+.flywrap{margin:44px 0 10px;display:flex;justify-content:center}
+.flywrap svg{max-width:640px;width:100%;height:auto}
+.flycap{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin:18px 0 0}
+.flycap span{font-size:12px;color:var(--ink-3);display:inline-flex;align-items:center;gap:7px}
+.flycap i{width:10px;height:10px;display:inline-block;border-radius:2px}
+.flycap .c1 i{background:var(--indigo)}
+.flycap .c2 i{background:var(--plum)}
+.flycap .c3 i{background:var(--warn)}
+
+/* 联动表 */
+.lk{margin:38px 0 8px;border-top:2px solid var(--ink)}
+.lk table{min-width:640px}
+.lk td:first-child{white-space:normal}
+
+/* 结语 */
+.coda{margin-top:60px;padding:46px 48px;background:var(--indigo-ink);color:#fff;position:relative;overflow:hidden}
+.coda::after{content:"轮";position:absolute;right:-24px;bottom:-70px;font-family:var(--serif);font-weight:900;font-size:280px;color:rgba(255,255,255,.05);line-height:1}
+.coda .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:#A5A8E8;margin-bottom:20px}
+.coda p{font-size:15.5px;line-height:2.2;color:#E2E3F8;max-width:780px;position:relative;z-index:2}
+.coda strong{color:#fff;font-weight:600}
+.coda .dic{color:#fff;border-bottom:1px solid rgba(255,255,255,.5);font-weight:600}
+
+footer{border-top:1px solid var(--hair-2);padding:44px 48px;max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--ink-3);flex-wrap:wrap;gap:12px}
+.top{position:fixed;right:34px;bottom:34px;width:46px;height:46px;border-radius:50%;background:var(--paper-2);border:1px solid var(--hair-2);color:var(--indigo);font-size:16px;cursor:pointer;opacity:0;pointer-events:none;transition:.35s;z-index:90;display:flex;align-items:center;justify-content:center}
+.top.show{opacity:1;pointer-events:auto}
+.top:hover{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+.rv{opacity:0;transform:translateY(24px);transition:opacity .9s cubic-bezier(.22,.61,.36,1),transform .9s cubic-bezier(.22,.61,.36,1)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+@media (max-width:1080px){.toc{display:none}.shell{grid-template-columns:1fr;gap:0}.ev{grid-template-columns:1fr}.pipe{grid-template-columns:1fr}.pipe .p+.p{border-left:none;border-top:1px dashed var(--hair)}.anti{grid-template-columns:1fr}}
+@media (max-width:820px){
+  .hero{padding:100px 24px 80px}
+  .shell{padding:0 24px 100px}
+  .dr{grid-template-columns:1fr}
+  .dr .dk{border-right:none;border-bottom:1px solid var(--hair);padding:10px 0 4px;margin-right:0}
+  .dr .dc{padding:8px 0 14px}
+  .sec-num{font-size:56px}
+  .coda{padding:36px 26px}
+  footer{padding:36px 24px}
+  .sec{margin-bottom:100px}
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="grain"></div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow rv">EVIDENCE ENGINE · VOL.15 DATA FLYWHEEL</div>
+    <h1 class="rv" style="transition-delay:.08s">数据正向飞轮：<em>让指标有据可依</em></h1>
+    <div class="vol rv" style="transition-delay:.16s">
+      <span class="frame-tag">四类证据 · 五张标准表 · 三层版本 · 一座飞轮</span>
+      <span class="hero-meta">4 EVIDENCE × 5 TABLES × 3 VERSIONS × 3 LOOPS</span>
+    </div>
+    <div class="hero-lede">
+      <p class="rv" style="transition-delay:.24s">VOL.01 回答「用什么证据测」——<strong>行为数据、客观评测、主观研究、真实业务结果</strong>；拆解字典 71 卡的「数据来源」「数据埋点」行给出了每张卡的取数清单。但证据不会自己变成指标。本方案回答更工程的三问：<strong>数据从哪获取、怎么清洗成标准表、指标公式怎么消费它们</strong>——再加上一道防腐的工序：版本管理。</p>
+      <p class="rv" style="transition-delay:.3s">当根因分析产生的优化重新改变用户行为，新数据又被采集进来——这个回路可以叫<span class="mark">数据正向飞轮</span>，但「正向」必须由三圈结构、转速指标与反模式防线来担保，否则它只是一句口号。本页与四份既有文档互为锚点：<strong>体系定义指标、字典拆解指标、手册运转指标、图谱连起指标，本页供给全部指标的燃料。</strong></p>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+
+  <nav class="toc" id="toc">
+    <div class="toc-label">CONTENTS · 目录</div>
+    <a href="#s1" class="active"><span class="n">一</span>四类证据采集</a>
+    <a href="#s2"><span class="n">二</span>清洗与标准表</a>
+    <a href="#s3"><span class="n">三</span>指标消费映射</a>
+    <a href="#s4"><span class="n">四</span>版本管理</a>
+    <a href="#s5"><span class="n">五</span>数据正向飞轮</a>
+    <a href="#s6"><span class="n">六</span>与体系关联</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 一、四类证据采集 ============ -->
+  <section class="sec" id="s1">
+    <div class="sec-head rv">
+      <div class="sec-num">一</div>
+      <div class="sec-head-txt">
+        <div class="sec-chapter">CHAPTER 01 · ACQUISITION</div>
+        <h2 class="sec-title">四类证据怎么获取</h2>
+      </div>
+    </div>
+    <div class="sec-rule rv"></div>
+    <div class="prose"><p>VOL.01「如何真正测量」给出四类证据的<strong>定义与内容清单</strong>；本节把它们工程化：每类证据一个采集方案——用什么手段采、核心事件是什么、走什么工具链、要防什么质量风险。<strong>采集纪律先行于技术选型</strong>：埋点命名全局唯一、属性 schema 冻结后才允许上线、任何采集变更走发布流程。</p></div>
+
+    <div class="ev rv">
+      <div class="e">
+        <div class="no">EVIDENCE 01</div>
+        <h5>行为数据<span class="en">BEHAVIORAL LOGS</span></h5>
+        <p class="anchor">原文锚：任务完成、重试、纠错、中断、接管、放弃、重复使用。</p>
+        <dl>
+          <div><dt>采集手段</dt><dd><strong>双端埋点</strong>：客户端 SDK 记交互流（点击 / 输入 / 停留 / 焦点），服务端任务编排层记状态机终态；两侧以 <span class="mono">session_id + task_id</span> 关联。</dd></div>
+          <div><dt>核心事件</dt><dd><span class="mono">task_start</span> / <span class="mono">clarify_round</span> / <span class="mono">regenerate</span> / <span class="mono">correction</span> / <span class="mono">tool_call</span> / <span class="mono">error</span> / <span class="mono">task_end</span>（终态枚举：completed · failed · abandoned · taken_over）。</dd></div>
+          <div><dt>工具链</dt><dd>埋点 SDK → 消息队列 → 原始层落库（T+0）；<strong>全量采集</strong>、只注册不改义，指标在下游定义。</dd></div>
+          <div><dt>质量风险</dt><dd>事件丢失、属性缺失、重复上报——以 <span class="mono">event_id</span> 幂等键去重；降级补传机制保完整性。</dd></div>
+        </dl>
+      </div>
+      <div class="e">
+        <div class="no">EVIDENCE 02</div>
+        <h5>客观评测<span class="en">OBJECTIVE BENCHMARKS</span></h5>
+        <p class="anchor">原文锚：标准任务集、正确性测试、约束检查、工具执行结果、专家审核。</p>
+        <dl>
+          <div><dt>采集手段</dt><dd>评测平台对<strong>版本化的标准任务集</strong>定期跑批 + 线上失败样本沉淀回用例库 + LLM-as-judge 初筛 + 人工评审终审。</dd></div>
+          <div><dt>关键口径</dt><dd>验收标准与 rubric <strong>事前定义</strong>；判分人一致性抽检（Kappa ≥ 0.75）；评测环境与线上环境隔离，防数据串味。</dd></div>
+          <div><dt>工具链</dt><dd>用例库（PR 评审合入）→ 跑批调度 → 判分流水 → <span class="mono">fact_eval</span>。</dd></div>
+          <div><dt>质量风险</dt><dd><span class="mono r">评测集过拟合</span>（只修用例不改产品）与<strong>判分漂移</strong>（模型换代后 rubric 语义偏移）——rubric 必须随模型版本登记。</dd></div>
+        </dl>
+      </div>
+      <div class="e">
+        <div class="no">EVIDENCE 03</div>
+        <h5>主观研究<span class="en">SUBJECTIVE RESEARCH</span></h5>
+        <p class="anchor">原文锚：满意度、信任、可控性、认知负担、访谈与可用性测试。</p>
+        <dl>
+          <div><dt>采集手段</dt><dd>任务后<strong>一题式微调研</strong>（嵌入完成页，频控防疲劳）+ 周期量表（信任 / 可控性，月度）+ NPS（季度）+ 深访与可用性测试（月度抽样）。</dd></div>
+          <div><dt>关键纪律</dt><dd>每份问卷锚定 <span class="mono">task_id</span>，可与行为数据 join；开放题编码进结构化字段；<strong>防时机污染</strong>——刚失败的任务不弹满意题。</dd></div>
+          <div><dt>工具链</dt><dd>微调研组件 → <span class="mono">fact_survey</span>；访谈录音 → 转写编码 → 用户研究档案。</dd></div>
+          <div><dt>质量风险</dt><dd><span class="mono r">幸存者偏差</span>（流失用户答不到题）与社会期许偏差——问卷只做假设不做结论，与行为数据交叉校准。</dd></div>
+        </dl>
+      </div>
+      <div class="e">
+        <div class="no">EVIDENCE 04</div>
+        <h5>真实业务结果<span class="en">BUSINESS OUTCOMES</span></h5>
+        <p class="anchor">原文锚：节省的时间、交付质量、返工成本、风险事件和长期价值。</p>
+        <dl>
+          <div><dt>采集手段</dt><dd>业务系统对接——工单系统（返工工单）、交付验收系统（通过记录）、财务（成本核算）、增长平台（留存转化），以 <span class="mono">task_id</span> 为贯通键。</dd></div>
+          <div><dt>关键纪律</dt><dd><strong>任务 ID 必须写进业务单据</strong>——归因断链是本类数据的第一死因；月度对账：业务侧记录与 <span class="mono">fact_task</span> 的匹配率。</dd></div>
+          <div><dt>工具链</dt><dd>系统间 ETL / webhooks → <span class="mono">fact_business</span> → 月度对账报告。</dd></div>
+          <div><dt>质量风险</dt><dd><span class="mono r">归因断链</span>与<strong>口径不一</strong>（「返工」在业务系统与 AI 侧定义不同）——口径映射表登记在案，随对账更新。</dd></div>
+        </dl>
+      </div>
+    </div>
+    <div class="note rv"><b>采集总纪律：</b>四类证据共用一套关联键（<b>user_id · session_id · task_id</b>）。任何一张表缺键，指标就只剩孤证——VOL.01 的立场是「四类证据互相印证」，印证的前提是能连上。</div>
+  </section>
+
+  <!-- ============ 二、清洗与标准表 ============ -->
+  <section class="sec" id="s2">
+    <div class="sec-head rv">
+      <div class="sec-num">二</div>
+      <div class="sec-head-txt">
+        <div class="sec-chapter">CHAPTER 02 · STANDARDIZATION</div>
+        <h2 class="sec-title">清洗、标准化与五张标准表</h2>
+      </div>
+    </div>
+    <div class="sec-rule rv"></div>
+    <div class="prose"><p>原始数据不能直接喂指标。参照数仓分层惯例，建 <strong>BRONZE → SILVER → GOLD</strong> 三层管道：原始层保真、清洗层治理、指标层定口径。<strong>口径唯一出口在 gold 层</strong>——看板、告警、回归对比都只读 gold，任何人不许在查询里临时改公式。</p></div>
+
+    <div class="pipe rv">
+      <div class="p p1">
+        <div class="layer">BRONZE · 原始层</div>
+        <h5>原样落库，不可变</h5>
+        <ol>
+          <li><strong>只追加不修改</strong>——保留原始证据链，清洗错了可以随时回放</li>
+          <li>按天分区，保留 13 个月滚动归档</li>
+          <li>四类证据分管道进入：行为流水 / 评测流水 / 问卷原始表 / 业务快照</li>
+        </ol>
+      </div>
+      <div class="p p2">
+        <div class="layer">SILVER · 清洗层</div>
+        <h5>五步治理，坏数据不静默</h5>
+        <ol>
+          <li><strong>幂等去重</strong>：以 event_id / record_id 去重，重复上报只计一次</li>
+          <li><strong>时区统一</strong>：全部归一为业务时区（UTC+8），时间戳带源时区留档</li>
+          <li><strong>会话切分与任务归因</strong>：多条事件归并为一任务一行，切分规则版本化</li>
+          <li><strong>PII 脱敏</strong>：goal_text 等自由文本哈希化或移入安全区，分析区不见明文</li>
+          <li><strong>schema 校验</strong>：缺属性、类型错的数据进<span style="white-space:nowrap">死信队列</span>，人工裁决</li>
+        </ol>
+      </div>
+      <div class="p p3">
+        <div class="layer">GOLD · 指标层</div>
+        <h5>口径唯一出口</h5>
+        <ol>
+          <li><strong>指标宽表</strong>：按 71 卡口径计算物化视图，公式即 SQL 的唯一权威</li>
+          <li><strong>周快照</strong>：snapshot_id 标识，看板与告警只读快照，保证同图同数</li>
+          <li><strong>回归对比</strong>：口径变更后新旧快照可并排复算，支撑双轨期</li>
+        </ol>
+      </div>
+    </div>
+
+    <h4 style="font-family:var(--serif);font-weight:700;font-size:20px;margin:64px 0 4px;letter-spacing:.04em">五张标准表 <span style="font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;color:var(--ink-3)">SCHEMA v1.3 · SILVER LAYER</span></h4>
+    <div class="prose" style="margin-top:14px"><p>四类证据 + 任务主表，构成指标消费的最小完备集。<strong>fact_task 是主表</strong>：一任务一行，其余四张表都以 task_id 挂靠。每张表的字段变更走第四章的版本流程。</p></div>
+
+    <div class="inv rv schema-tbl"><table>
+      <thead><tr><th>字段</th><th>类型</th><th>说明（fact_task · 任务事实表 · 一任务一行）</th></tr></thead>
+      <tbody>
+        <tr><td>task_id</td><td>STRING PK</td><td>全局唯一任务号，格式 <span class="mono">T-日期-序号</span>；业务单据引用此键</td></tr>
+        <tr><td>session_id / user_id</td><td>STRING</td><td>会话与用户（脱敏 ID），跨表关联键</td></tr>
+        <tr><td>task_type</td><td>STRING</td><td>任务类型（代码生成 / 文案撰写 / 数据分析…），分层维度</td></tr>
+        <tr><td>risk_level</td><td>ENUM L0–L3</td><td>风险等级（只读 → 不可逆），阈值分层与授权策略依据</td></tr>
+        <tr><td>goal_source</td><td>ENUM</td><td>目标来源：explicit 显式 / inferred 推断——目标对齐率的分层键</td></tr>
+        <tr><td>start_ts / end_ts / duration_s</td><td>TIMESTAMP / INT</td><td>起止与净耗时（含等待、提示、核验分段拆解）</td></tr>
+        <tr><td>final_state</td><td>ENUM</td><td>completed · failed · abandoned · taken_over——任务成功率的分子分母依据</td></tr>
+        <tr><td>outcome_align</td><td>BOOL / NULL</td><td>对齐判定（最终行为符合用户目标）；未判定为 NULL</td></tr>
+        <tr><td>correction_rounds</td><td>INT</td><td>纠错轮次；连续 ≥ 3 的会话是挫败重灾区</td></tr>
+        <tr><td>rework_count</td><td>INT</td><td>返工次数，关联 fact_business 返工工单</td></tr>
+        <tr><td>supervision_s</td><td>INT</td><td>监督时长（盯进度 / 查状态 / 等确认），用户监督负担的分子</td></tr>
+        <tr><td>data_ver</td><td>STRING</td><td>生成此行的清洗规则版本（schema 版本），回溯依据</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="inv rv schema-tbl"><table>
+      <thead><tr><th>表名</th><th>粒度</th><th>其余四张标准表 · 关键字段</th></tr></thead>
+      <tbody>
+        <tr><td>fact_event</td><td>一事件一行</td><td>event_id PK · task_id FK · ts · event_name · props(JSON) · channel · schema_ver——<strong>最原始的流水</strong>，多数过程指标直接消费</td></tr>
+        <tr><td>fact_eval</td><td>一次判分一行</td><td>eval_id PK · output_id · task_id FK · eval_set_ver · judge_type(human/llm/rule) · rubric_ver · scores(JSON) · verdict · judged_at——<strong>评测集版本在此登记</strong></td></tr>
+        <tr><td>fact_survey</td><td>一份答卷一行</td><td>response_id PK · task_id FK · user_id · metric_key(effort/trust/nps…) · score · scale · comment · collected_at——<strong>metric_key 对齐字典指标名</strong></td></tr>
+        <tr><td>fact_business</td><td>一条业务结果一行</td><td>record_id PK · task_id FK · outcome_type(rework/acceptance/retention…) · value · value_unit · source_system · sync_ts · recon_status——<strong>recon_status 月度对账更新</strong></td></tr>
+      </tbody>
+    </table></div>
+
+    <h4 style="font-family:var(--serif);font-weight:700;font-size:20px;margin:64px 0 4px;letter-spacing:.04em">样例表 <span style="font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;color:var(--ink-3)">FACT_TASK · 6 行样例 · 2026-10-15 数据分区</span></h4>
+    <div class="inv rv"><table>
+      <thead><tr><th>task_id</th><th>task_type</th><th>risk</th><th>goal_source</th><th>duration_s</th><th>corr.</th><th>final_state</th><th>align</th><th>superv_s</th><th>ver</th></tr></thead>
+      <tbody>
+        <tr><td>T-1015-0031</td><td>代码生成</td><td>L1</td><td>explicit</td><td>412</td><td>1</td><td><span class="mono k">completed</span></td><td>1</td><td>96</td><td>v1.3</td></tr>
+        <tr><td>T-1015-0042</td><td>文案撰写</td><td>L0</td><td>explicit</td><td>128</td><td>0</td><td><span class="mono k">completed</span></td><td>1</td><td>12</td><td>v1.3</td></tr>
+        <tr><td>T-1015-0058</td><td>数据分析</td><td>L2</td><td>inferred</td><td>1760</td><td>3</td><td><span class="mono">taken_over</span></td><td>0</td><td>640</td><td>v1.3</td></tr>
+        <tr><td>T-1015-0061</td><td>图表制作</td><td>L1</td><td>explicit</td><td>355</td><td>1</td><td><span class="mono r">failed</span></td><td>—</td><td>210</td><td>v1.3</td></tr>
+        <tr><td>T-1015-0077</td><td>代码生成</td><td>L1</td><td>inferred</td><td>680</td><td>2</td><td><span class="mono k">completed</span></td><td>1</td><td>158</td><td>v1.3</td></tr>
+        <tr><td>T-1015-0089</td><td>文档整理</td><td>L0</td><td>explicit</td><td>96</td><td>0</td><td><span class="mono r">abandoned</span></td><td>—</td><td>30</td><td>v1.3</td></tr>
+      </tbody>
+    </table></div>
+    <div class="leg rv">
+      <span class="c1"><i></i>align=1 · 对齐成功</span>
+      <span class="c2"><i></i>— · 任务未终验，对齐不可判定</span>
+    </div>
+    <div class="note rv"><b>读表示范：</b>第 3 行（T-1015-0058）是典型问题样本——推断目标 + 3 轮纠错 + 640 秒监督 + 用户接管。它同时喂养多个指标：<strong>任务成功率（不计成功）、目标对齐率（inferred 层失败）、用户纠错成功率（纠错失败）、用户监督负担（supervision 占比 36%）</strong>。一个任务，四条证据线索——根因分析正是从这样的行开始。</div>
+  </section>
+
+  <!-- ============ 三、指标消费映射 ============ -->
+  <section class="sec" id="s3">
+    <div class="sec-head rv">
+      <div class="sec-num">三</div>
+      <div class="sec-head-txt">
+        <div class="sec-chapter">CHAPTER 03 · CONSUMPTION</div>
+        <h2 class="sec-title">指标公式怎么消费这些数据</h2>
+      </div>
+    </div>
+    <div class="sec-rule rv"></div>
+    <div class="prose"><p>拆解字典 71 卡每张都有「公式」与「数据来源」行——本章把两者接到五张表上。下面 15 个代表指标覆盖六卷，<strong>每个公式的分子分母都能指到具体字段</strong>；其余指标同法映射，口径以卡片为准。<strong>消费纪律：指标只在 gold 层计算，公式变更走口径版本流程</strong>（见第四章）。</p></div>
+
+    <div class="lk rv"><table>
+      <thead><tr><th>卷 · 指标</th><th>公式引用</th><th>消费表</th><th>关键字段与口径</th></tr></thead>
+      <tbody>
+        <tr><td>卷一 · 目标对齐率</td><td>F 全卡</td><td><span class="mono">fact_task</span></td><td>outcome_align=1 ÷ 已判定任务；按 goal_source 分层（explicit / inferred 单列基线）</td></tr>
+        <tr><td>卷一 · 需求澄清有效率</td><td>S 全卡</td><td><span class="mono">fact_event</span></td><td>clarify_round 后对齐率提升 ÷ 澄清总轮次；追问质量而非数量</td></tr>
+        <tr><td>卷二 · 用户纠错成功率</td><td>F 全卡</td><td><span class="mono">fact_event</span> + <span class="mono">fact_task</span></td><td>correction 事件后 final_state 达预期 ÷ 有效纠错尝试；连续 3 轮失败单列</td></tr>
+        <tr><td>卷二 · 误解修复率</td><td>S 卡</td><td><span class="mono">fact_event</span></td><td>correction 后 1 轮内纠正成功 ÷ 误解事件总数</td></tr>
+        <tr><td>卷三 · 安全违规率</td><td>F · 红线</td><td><span class="mono">fact_event</span> + <span class="mono">fact_eval</span></td><td>权限审计事件按严重度三级记账 + 红队评测集违规判分；目标值 = 0</td></tr>
+        <tr><td>卷三 · 信任校准度</td><td>F 全卡</td><td><span class="mono">fact_task</span> + <span class="mono">fact_eval</span></td><td>|实际采纳率 − 应采纳率| ÷ 应采纳率；采纳行为取 task 表，应采纳率由评测正确性回溯</td></tr>
+        <tr><td>卷四 · 端到端任务成功率</td><td>F · 北极星锚点</td><td><span class="mono">fact_task</span> + <span class="mono">fact_eval</span></td><td>final_state=completed 且验收通过 ÷ 纳入评测任务总数；按 risk_level × 难度分层</td></tr>
+        <tr><td>卷四 · 意图漂移率</td><td>S 卡</td><td><span class="mono">fact_event</span></td><td>执行路径与初始目标偏离的任务占比；长任务按步数分段观测</td></tr>
+        <tr><td>卷四 · 工具调用成功率</td><td>F 卡</td><td><span class="mono">fact_event</span></td><td>tool_call 成功返回 ÷ 总调用；按工具 × 调用时长分层</td></tr>
+        <tr><td>卷四 · 异常恢复率</td><td>F 全卡</td><td><span class="mono">fact_event</span> + <span class="mono">fact_task</span></td><td>error 后最终 completed ÷ error 任务数；MTTR = 恢复时长中位数</td></tr>
+        <tr><td>卷五 · 结果可用率</td><td>F 全卡</td><td><span class="mono">fact_eval</span> + <span class="mono">fact_event</span></td><td>verdict=usable ÷ 总输出；行为侧用户 diff 改动 &gt; 30% 记不可用</td></tr>
+        <tr><td>卷五 · 首次交付通过率</td><td>F 全卡</td><td><span class="mono">fact_business</span> + <span class="mono">fact_task</span></td><td>24h 内无修改请求且被使用 ÷ 交付总数；rework 工单关联原因分类</td></tr>
+        <tr><td>卷五 · 任务完成耗时</td><td>F 全卡</td><td><span class="mono">fact_task</span> + 基线库</td><td>(基线耗时 − duration_s) ÷ 基线耗时；duration 必须含核验与返工分段</td></tr>
+        <tr><td>卷六 · 认知负担</td><td>F 全卡</td><td><span class="mono">fact_survey</span> + <span class="mono">fact_event</span></td><td>metric_key=effort 微调研均分；停顿 / 回看 / 重复操作频次做行为交叉验证</td></tr>
+        <tr><td>卷六 · 持续使用率</td><td>F · 总账</td><td><span class="mono">fact_task</span> + <span class="mono">fact_business</span></td><td>周窗内再次委托用户 ÷ 上窗用户；「使用」= 发起委托，retention 业务记录佐证深度</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note rv"><b>消费映射的双重用途：</b>正向看，它保证每个指标的取数路径可复现；反向看，它是埋点审计清单——表中任何字段在五张表里取不到值，对应的指标就是<b>「无源之水」</b>，要么补埋点、要么下线指标，不允许长期用估算冒充。</div>
+  </section>
+
+  <!-- ============ 四、版本管理 ============ -->
+  <section class="sec" id="s4">
+    <div class="sec-head rv">
+      <div class="sec-num">四</div>
+      <div class="sec-head-txt">
+        <div class="sec-chapter">CHAPTER 04 · VERSIONING</div>
+        <h2 class="sec-title">数据的版本管理</h2>
+      </div>
+    </div>
+    <div class="sec-rule rv"></div>
+    <div class="prose"><p>数据会变，口径会变，评测集也会变。<strong>没有版本管理的数据，历史不可比、回溯不可行、责任不可查</strong>。版本管理分三层：表结构版本、评测集版本、指标口径版本——三者各有变更纪律，共用一张登记表。</p></div>
+
+    <div class="cards">
+      <div class="card rv">
+        <div class="card-head"><span class="no">V-01</span><h4>schema 版本 · 表结构</h4><span class="en">DATA SCHEMA</span><span class="badge full">当前 v1.3</span></div>
+        <div class="d7">
+          <div class="dr"><div class="dk">纪律</div><div class="dc"><strong>只加不删不改</strong>：新列向后兼容（历史行记 NULL）；字段更名与类型变更视为破坏性变更，升级大版本 v2——新旧 schema <strong>双写迁移</strong>一个季度，验证后停旧。</div></div>
+          <div class="dr"><div class="dk">回溯</div><div class="dc">每行数据带 <span class="mono">data_ver</span>，记录生成它的清洗规则版本；清洗规则修复时可按版本重刷 silver / gold 层，bronze 永不动。</div></div>
+        </div>
+      </div>
+      <div class="card rv">
+        <div class="card-head"><span class="no">V-02</span><h4>评测集版本 · 用例库</h4><span class="en">EVAL SET</span><span class="badge full">当前 v2.1</span></div>
+        <div class="d7">
+          <div class="dr"><div class="dk">纪律</div><div class="dc">用例入库走 <strong>PR 评审合入</strong>，版本号 +1；rubric（判分标准）与评测集<strong>同版本号联动</strong>，模型换代时 rubric 重新校准并登记。</div></div>
+          <div class="dr"><div class="dk">回溯</div><div class="dc">评测集升级后<strong>全量回归重跑</strong>，新旧版本分数双轨记录——字典卡的阈值基线必须标注「基于 eval_set vX」，跨版本比分数是自欺。</div></div>
+        </div>
+      </div>
+      <div class="card rv">
+        <div class="card-head"><span class="no">V-03</span><h4>口径版本 · 指标公式</h4><span class="en">METRIC DEFINITION</span><span class="badge full">当前 v1.0</span></div>
+        <div class="d7">
+          <div class="dr"><div class="dk">纪律</div><div class="dc">与拆解字典卡片脚注的「口径版本 <span class="mono">v1.0 / 2026-10</span>」同一套账。<strong>公式变更必须登记变更日志</strong>：改了什么、为什么改、影响哪些卡、谁批准。</div></div>
+          <div class="dr"><div class="dk">回溯</div><div class="dc">口径<strong>纠错</strong> → 历史重算（一次到位）；口径<strong>演进</strong> → 新老口径双轨并行一个观察期（通常四周），趋势确认后切换，旧口径存档只读。</div></div>
+        </div>
+      </div>
+    </div>
+
+    <h4 style="font-family:var(--serif);font-weight:700;font-size:20px;margin:56px 0 4px;letter-spacing:.04em">版本登记表样例 <span style="font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;color:var(--ink-3)">CHANGELOG · 4 行样例</span></h4>
+    <div class="inv rv"><table>
+      <thead><tr><th>版本</th><th>层</th><th>变更内容</th><th>生效日期</th><th>兼容性</th><th>回溯策略</th></tr></thead>
+      <tbody>
+        <tr><td>fact_task v1.3</td><td><span class="st b">SILVER</span></td><td>新增 supervision_s（监督时长）列，支撑用户监督负担卡</td><td>2026-09-02</td><td><span class="st g">向后兼容</span></td><td>不重算，历史行 NULL</td></tr>
+        <tr><td>golden_set v2.1</td><td><span class="st b">EVAL</span></td><td>沉淀 38 条失败样本为回归用例（9 月样本沉淀批）</td><td>2026-09-20</td><td><span class="st g">评审合入</span></td><td>全量回归重跑</td></tr>
+        <tr><td>口径 v1.1</td><td><span class="st d">GOLD</span></td><td>返工率分母排除 abandoned 任务，与「纳入评测口径」对齐</td><td>2026-10-06</td><td><span class="st w">口径变更</span></td><td>双轨并行 4 周后切换</td></tr>
+        <tr><td>rubric v0.4</td><td><span class="st b">EVAL</span></td><td>可用性判分标准补充「结构改动 ≤ 30%」细则</td><td>2026-10-06</td><td><span class="st g">同步联动</span></td><td>抽样 200 条对照重判</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ============ 五、数据正向飞轮 ============ -->
+  <section class="sec" id="s5">
+    <div class="sec-head rv">
+      <div class="sec-num">五</div>
+      <div class="sec-head-txt">
+        <div class="sec-chapter">CHAPTER 05 · THE FLYWHEEL</div>
+        <h2 class="sec-title">数据正向飞轮：成立，但要三道担保</h2>
+      </div>
+    </div>
+    <div class="sec-rule rv"></div>
+    <div class="prose"><p>回到这个问题本身：<strong>「依赖这些数据进行根因分析优化后又产生新的数据」——这可以叫数据正向飞轮吗？</strong>可以，但「正向」不是自动的，需要三道担保：</p>
+    <p>其一，<strong>正向 = 每转一圈资产增厚</strong>——失败样本沉淀为评测用例（评测集变强）、根因归档为知识（归因变快）、盲区转化为新埋点（视野变全）。这是 AI 产品区别于传统 BI 的独特环节：数据不只是用来「看」的，是用来「喂」的。其二，<strong>每个环节都有制度依赖</strong>——PR 评审、归因例会、埋点变更流程，缺一项飞轮就打滑。其三，<strong>它会退化</strong>——三种反模式让它空转甚至倒转，见本章末。</p></div>
+
+    <div class="flywrap rv">
+      <svg viewBox="0 0 640 520" role="img" aria-label="数据正向飞轮：采集、标准化、消费、诊断、优化、沉淀六环节循环">
+        <defs>
+          <marker id="fw-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8B8A93"/></marker>
+        </defs>
+        <!-- 三圈标注 -->
+        <circle cx="320" cy="260" r="228" fill="none" stroke="#EBECF7" stroke-width="34"/>
+        <circle cx="320" cy="260" r="228" fill="none" stroke="#D8D6CC" stroke-width="1" stroke-dasharray="3 5"/>
+        <text x="320" y="44" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" letter-spacing="3" fill="#8B8A93">OUTER · 口径进化圈</text>
+        <circle cx="320" cy="260" r="150" fill="none" stroke="#F3EAF6" stroke-width="26"/>
+        <circle cx="320" cy="260" r="150" fill="none" stroke="#D8D6CC" stroke-width="1" stroke-dasharray="3 5"/>
+        <text x="320" y="120" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" letter-spacing="3" fill="#8B8A93">MID · 归因改进圈</text>
+        <!-- 环流弧线（六段，顺时针） -->
+        <g fill="none" stroke="#8B8A93" stroke-width="1.6" marker-end="url(#fw-arrow)">
+          <path d="M 388 54 A 228 228 0 0 1 540 200"/>
+          <path d="M 548 226 A 228 228 0 0 1 500 428"/>
+          <path d="M 470 448 A 228 228 0 0 1 246 468"/>
+          <path d="M 218 452 A 228 228 0 0 1 100 286"/>
+          <path d="M 96 258 A 228 228 0 0 1 156 80"/>
+          <path d="M 200 62 A 228 228 0 0 1 348 40"/>
+        </g>
+        <!-- 中心 -->
+        <circle cx="320" cy="260" r="86" fill="#1B1747"/>
+        <text x="320" y="248" text-anchor="middle" font-family="Noto Serif SC" font-weight="900" font-size="26" fill="#FFFFFF">数据</text>
+        <text x="320" y="282" text-anchor="middle" font-family="Noto Serif SC" font-weight="900" font-size="26" fill="#FFFFFF">正向飞轮</text>
+        <!-- 六节点 -->
+        <g font-family="Noto Sans SC" text-anchor="middle">
+          <g><circle cx="320" cy="32" r="30" fill="#4338CA"/><text x="320" y="28" font-size="13" font-weight="700" fill="#fff">采集</text><text x="320" y="44" font-family="IBM Plex Mono" font-size="7.5" fill="#C9CBF5">ACQUIRE</text></g>
+          <g><circle cx="552" cy="208" r="30" fill="#4338CA"/><text x="552" y="204" font-size="13" font-weight="700" fill="#fff">标准化</text><text x="552" y="220" font-family="IBM Plex Mono" font-size="7.5" fill="#C9CBF5">STANDARDIZE</text></g>
+          <g><circle cx="484" cy="442" r="30" fill="#4338CA"/><text x="484" y="438" font-size="13" font-weight="700" fill="#fff">消费</text><text x="484" y="454" font-family="IBM Plex Mono" font-size="7.5" fill="#C9CBF5">COMPUTE</text></g>
+          <g><circle cx="228" cy="462" r="30" fill="#52255C"/><text x="228" y="458" font-size="13" font-weight="700" fill="#fff">诊断</text><text x="228" y="474" font-family="IBM Plex Mono" font-size="7.5" fill="#E0C4E6">DIAGNOSE</text></g>
+          <g><circle cx="92" cy="290" r="30" fill="#52255C"/><text x="92" y="286" font-size="13" font-weight="700" fill="#fff">优化</text><text x="92" y="302" font-family="IBM Plex Mono" font-size="7.5" fill="#E0C4E6">IMPROVE</text></g>
+          <g><circle cx="176" cy="70" r="30" fill="#B07A1E"/><text x="176" y="66" font-size="13" font-weight="700" fill="#fff">沉淀</text><text x="176" y="82" font-family="IBM Plex Mono" font-size="7.5" fill="#F3E2C0">SEDIMENT</text></g>
+        </g>
+        <!-- 沉淀回流注释 -->
+        <path d="M 176 100 Q 210 170 268 216" fill="none" stroke="#B07A1E" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#fw-arrow)"/>
+        <text x="150" y="168" font-family="Noto Sans SC" font-size="10" fill="#8A651F" text-anchor="middle">失败样本 → 评测用例</text>
+      </svg>
+    </div>
+    <div class="flycap rv">
+      <span class="c1"><i></i>内圈 · 评测飞轮：样本沉淀让指标更准</span>
+      <span class="c2"><i></i>中圈 · 归因飞轮：优化验证让产品变好</span>
+      <span class="c3"><i></i>外圈 · 口径进化圈：盲区转化让视野变全</span>
+    </div>
+
+    <div class="prose" style="margin-top:40px"><p><strong>飞轮的六个环节</strong>对应本方案前四章：采集（一章四卡）→ 标准化（二章三层管道）→ 消费（三章指标映射）→ 诊断（字典「触发机制」+ 闭环手册归因）→ 优化（字典「改进闭环」）→ 沉淀（失败样本入用例库、归因入知识库、盲区转新埋点）——然后新行为产生新数据，回到采集。<strong>沉淀环节（金色）是飞轮区别于普通闭环的关键</strong>：没有它，回路只是重复；有了它，回路是复利。</p></div>
+
+    <h4 style="font-family:var(--serif);font-weight:700;font-size:20px;margin:56px 0 4px;letter-spacing:.04em">飞轮转速 <span style="font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;color:var(--ink-3)">FLYWHEEL VELOCITY · 飞轮自身也要被度量</span></h4>
+    <div class="inv rv"><table>
+      <thead><tr><th>转速指标</th><th>公式</th><th>目标线</th><th>低于目标线时</th></tr></thead>
+      <tbody>
+        <tr><td>样本沉淀率</td><td>进入回归集的失败样本 ÷ 失败样本总数</td><td><span class="st g">≥ 60%</span></td><td>归因例会增设「沉淀清单」固定议程</td></tr>
+        <tr><td>用例库迭代频次</td><td>评测集版本月均迭代次数</td><td><span class="st g">≥ 1 / 月</span></td><td>检查失败样本通道是否被跳过</td></tr>
+        <tr><td>根因闭环时长</td><td>异动 → 归因报告 → 修复上线的中位时长</td><td><span class="st g">≤ 2 周</span></td><td>反查归因例会节奏与责任人到位率</td></tr>
+        <tr><td>端到端新鲜度</td><td>bronze → gold 数据延迟</td><td><span class="st g">T+1 内</span></td><td>管道性能优化，告警链路查滞后点</td></tr>
+        <tr><td>埋点覆盖率</td><td>字典「数据埋点」行所列事件实际埋设比例</td><td><span class="st g">100%</span></td><td>按 71 卡埋点清单逐卡补齐——<b>本方案与字典的直接挂钩点</b></td></tr>
+      </tbody>
+    </table></div>
+
+    <h4 style="font-family:var(--serif);font-weight:700;font-size:20px;margin:56px 0 4px;letter-spacing:.04em">三种退化反模式 <span style="font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.14em;color:var(--red)">ANTIPATTERNS · 飞轮空转的防线</span></h4>
+    <div class="anti rv">
+      <div class="a">
+        <h5>埋点腐化<span class="en">INSTRUMENTATION ROT</span></h5>
+        <p>症状：schema 漂移无人认领、事件悄悄改名、属性大面积缺失。</p>
+        <p><b>后果</b>：数据质量滑坡 → 指标失真 → 所有下游决策建立在坏数据上。</p>
+        <div class="fix"><strong>对策：</strong>埋点变更走发布流程 + 死信队列日清 + 埋点覆盖率纳入飞轮转速月报。</div>
+      </div>
+      <div class="a">
+        <h5>评测过拟合<span class="en">BENCHMARK OVERFIT</span></h5>
+        <p>症状：评测分数持续上涨，线上指标不动；团队只在用例上「改进」。</p>
+        <p><b>后果</b>：指标好看、体验没变——评测集失去对真实世界的代表性。</p>
+        <div class="fix"><strong>对策：</strong>用例只进真实失败样本 + 保留 20% 新鲜用例防陈旧 + 评测分与线上指标背离即触发审计。</div>
+      </div>
+      <div class="a">
+        <h5>只算不归因<span class="en">DASHBOARD THEATER</span></h5>
+        <p>症状：看板越做越精美，但从没有人因为指标异动开过归因会。</p>
+        <p><b>后果</b>：飞轮断在「诊断」环节——有测量无改进，数据变成装修。</p>
+        <div class="fix"><strong>对策：</strong>每个指标必须挂字典卡的触发机制与改进闭环——没有闭环的指标不予立项。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 六、与既有体系关联 ============ -->
+  <section class="sec" id="s6">
+    <div class="sec-head rv">
+      <div class="sec-num">六</div>
+      <div class="sec-head-txt">
+        <div class="sec-chapter">CHAPTER 06 · INTEGRATION</div>
+        <h2 class="sec-title">与既有体系的关联</h2>
+      </div>
+    </div>
+    <div class="sec-rule rv"></div>
+    <div class="prose"><p>本方案不是孤立的新文档，而是四份既有文档的<strong>燃料层</strong>：体系定义指标、字典拆解指标、手册运转指标、图谱连起指标——本页供给它们全部所需的证据与数据。</p></div>
+    <div class="lk rv"><table>
+      <thead><tr><th>既有文档</th><th>原文锚点</th><th>本方案承接</th></tr></thead>
+      <tbody>
+        <tr><td>VOL.01 六维体系</td><td>「如何真正测量」四类证据</td><td>第一章采集工程化展开——每类证据的手段 / 事件 / 工具链 / 风险</td></tr>
+        <tr><td>VOL.08–13 拆解字典</td><td>71 卡「数据来源」「数据埋点」行</td><td>埋点清单即覆盖率审计基准；三章映射表把卡片公式接到具体字段</td></tr>
+        <tr><td>VOL.07 闭环手册</td><td>触发机制与改进闭环</td><td>飞轮「诊断 → 优化」环节的制度容器，转速指标督办其运转</td></tr>
+        <tr><td>VOL.14 因果图谱</td><td>71 节点因果边</td><td>优化验证沿因果链观测上下游——防止按下葫芦浮起瓢</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="coda rv">
+      <div class="lbl">CODA · 本方案要点</div>
+      <p>指标是语言，数据是证据，飞轮是复利。四类证据让测量可信，五张标准表让数据可用，三层版本让历史可比，三圈飞轮让体系自转——<strong>采集 → 标准化 → 消费 → 诊断 → 优化 → 沉淀</strong>，每转一圈，下一次测量更准，下一次改进更快。数据飞轮的「正向」不在口号里，在<span class="dic">样本沉淀率与根因闭环时长的读数里</span>：体系的价值最终不在文档上，而在数据转起来的每一圈里。</p>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <span>AI 体验指标体系 · 数据正向飞轮方案 VOL.15 · EVIDENCE ENGINE</span>
+  <span>4 EVIDENCE × 5 TABLES × 3 VERSIONS × 3 LOOPS · 口径 v1.0 / 2026-10</span>
+</footer>
+
+<a href="AI体验指标体系研究汇总.html" title="返回研究汇总" aria-label="返回研究汇总" style="position:fixed;right:34px;bottom:88px;width:46px;height:46px;border-radius:50%;background:#2E2A72;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Noto Serif SC',serif;font-weight:600;font-size:15px;text-decoration:none;z-index:91;box-shadow:0 6px 20px -6px rgba(27,23,71,.45)">汇</a>
+<button class="top" id="toTop" aria-label="返回顶部">↑</button>
+
+<script>
+const progress=document.getElementById('progress');
+const toTop=document.getElementById('toTop');
+addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  const p=h.scrollTop/(h.scrollHeight-h.clientHeight);
+  progress.style.width=(p*100).toFixed(2)+'%';
+  toTop.classList.toggle('show',h.scrollTop>600);
+},{passive:true});
+toTop.addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
+
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.06,rootMargin:'0px 0px -3% 0px'});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+const links=[...document.querySelectorAll('.toc a')];
+const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const spy=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.classList.remove('active'));
+      const i=secs.indexOf(e.target);
+      if(i>-1)links[i].classList.add('active');
+    }
+  });
+},{rootMargin:'-25% 0px -65% 0px'});
+secs.forEach(s=>s&&spy.observe(s));
+</script>
+</body>
+</html>
